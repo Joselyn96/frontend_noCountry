@@ -1,14 +1,14 @@
 # 🩺 MediConnect
 
-Es un portal web de coordinación de citas y teleasistencia diseñado para clínicas y centros de salud 
+Es un portal web de coordinación de citas y teleasistencia diseñado para clínicas y centros de salud.
 El proyecto busca mejorar la eficiencia de los servicios de salud mediante una plataforma unificada, moderna y segura
 
 ## 🧩 Tecnologías utilizadas
 
-**Angular** 19.2.17 Framework principal para la aplicación web 
-**Node.js** 20.18.1 Entorno de ejecución
-**Tailwind CSS** Última Framework de estilos utilitario para una UI moderna
-**TypeScript** Última Tipado estático y organización modular del código
+- **Angular** 19.2.17 — Framework principal para la aplicación web  
+- **Node.js** 20.18.1 — Entorno de ejecución  
+- **Tailwind CSS** — Framework de estilos utilitario para una UI moderna  
+- **TypeScript** — Tipado estático y organización modular del código
 
 **Nota:**  
 El código fuente activo y en desarrollo se encuentra en la rama **`development`**
