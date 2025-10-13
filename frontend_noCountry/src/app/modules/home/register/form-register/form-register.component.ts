@@ -2,15 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FormRegisterComponent } from './form-register/form-register.component';
 
 @Component({
-  selector: 'app-register',
-  imports: [CommonModule, ReactiveFormsModule, FormRegisterComponent],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  selector: 'app-form-register',
+  imports: [ReactiveFormsModule, CommonModule],
+  templateUrl: './form-register.component.html',
+  styleUrl: './form-register.component.css'
 })
-export class RegisterComponent {
+export class FormRegisterComponent {
 registerForm: FormGroup;
   isLoading = false;
   error = '';
@@ -20,19 +19,24 @@ registerForm: FormGroup;
     this.registerForm = this.fb.group({
       name: ['', Validators.required],
       surname: ['', Validators.required],
-      birthDate: ['', Validators.required],
-      dni: ['', Validators.required],
-      gender: ['', Validators.required], // <-- agregado aquí
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      phone: [''],
+      gender: ['', Validators.required],
+      birthDate: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required],
     });
   }
 
   get name() { return this.registerForm.get('name'); }
+  get surname() { return this.registerForm.get('surname'); }
   get email() { return this.registerForm.get('email'); }
   get phone() { return this.registerForm.get('phone'); }
   get password() { return this.registerForm.get('password'); }
   get confirmPassword() { return this.registerForm.get('confirmPassword'); }
+  get birthDate() { return this.registerForm.get('birthDate'); }
+  get gender() { return this.registerForm.get('gender'); }
+  get dni() { return this.registerForm.get('dni'); }
 
   async onSubmit() {
     this.error = '';
@@ -40,7 +44,7 @@ registerForm: FormGroup;
 
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
-      this.error = 'Por favor completa todos los campos obligatorios';
+      this.error = 'Por favor completa los campos';
       return;
     }
 
@@ -52,7 +56,6 @@ registerForm: FormGroup;
 
     this.isLoading = true;
 
-    // Simula un delay de backend
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     this.success = 'Cuenta creada exitosamente. Redirigiendo...';
