@@ -1,8 +1,13 @@
 import { Routes } from '@angular/router';
+import { AdminComponent } from './admin/admin.component';
+import { DoctorComponent } from './doctor/doctor.component';
+import { PatientComponent } from './patient/patient.component';
 
 export const DASHBOARD_ROUTES: Routes = [
   // { path: '', pathMatch: 'full', redirectTo: 'home'},
-  // // { path: 'home', component: HomeComponent },
+  { path: 'admin', component: AdminComponent },
+  { path: 'doctor', component: DoctorComponent },
+  { path: 'patient', component: PatientComponent },
   // {
   //   path:'',
   //   component: HomeComponent,
