@@ -37,18 +37,6 @@ export class UserService {
   private decodingJWT() {
     const token = this.tokenService.getToken();
 
-    // VALIDACIÓN 1: Token no vacío
-    // if (!token || token.trim() === '') {
-    //   throw new Error('Token vacío o inválido');
-    // }
-
-    // VALIDACIÓN 2: Formato JWT (3 partes)
-    // const parts = token.split('.');
-    // if (parts.length !== 3) {
-    //   throw new Error(`Token JWT inválido: tiene ${parts.length} partes, se esperan 3`);
-    // }
-
-    // VALIDACIÓN 3: Decodificar con try-catch
     try {
       const decoded = jwtDecode<{
         id: string;
@@ -62,14 +50,6 @@ export class UserService {
       if (!decoded.id || !decoded.email || !decoded.role) {
         throw new Error('Token JWT no contiene campos requeridos (id, email, role)');
       }
-
-      // Verificar expiración (opcional)
-      // if (decoded.exp) {
-      //   const now = Math.floor(Date.now() / 1000);
-      //   if (decoded.exp < now) {
-      //     throw new Error('Token JWT ha expirado');
-      //   }
-      // }
 
       const user: UserToken = {
         id: decoded.id,
