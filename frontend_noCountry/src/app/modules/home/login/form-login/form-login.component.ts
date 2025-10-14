@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { finalize } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-form-login',
@@ -9,10 +12,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
   styleUrl: './form-login.component.css'
 })
 export class FormLoginComponent {
- loginForm: FormGroup;
+  loginForm: FormGroup;
   isLoading = false;
   error: string | null = null;
   success: string | null = null;
+
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   constructor(private fb: FormBuilder) {
     this.loginForm = this.fb.group({
@@ -20,6 +26,7 @@ export class FormLoginComponent {
       password: ['', [Validators.required]],
     });
   }
+
 
   get email() {
     return this.loginForm.get('email');
@@ -38,22 +45,23 @@ export class FormLoginComponent {
     this.isLoading = true;
     this.error = null;
     this.success = null;
+    const { email, password } = this.loginForm.value;
+    console.log('Email:', email);
+    console.log('Password:', password);
 
     // Simulación de login
-    setTimeout(() => {
-      this.isLoading = false;
-      const { email, password } = this.loginForm.value;
-
-      if (
-        (email === 'paciente@demo.com' ||
-          email === 'doctor@demo.com' ||
-          email === 'admin@demo.com') &&
-        password
-      ) {
-        this.success = 'Inicio de sesión exitoso';
-      } else {
-        this.error = 'Credenciales incorrectas';
-      }
-    }, 1500);
+    this.authService.auth(email, password)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: () => {
+          this.success = 'Inicio de sesión exitoso';
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 1500); // 1500ms = 1.5 segundos
+        },
+        error: (err) => {
+          this.error = 'Credenciales incorrectas';
+        }
+      });
   }
 }
