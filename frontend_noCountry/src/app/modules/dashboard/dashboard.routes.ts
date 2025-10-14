@@ -2,12 +2,20 @@ import { Routes } from '@angular/router';
 import { AdminComponent } from './admin/admin.component';
 import { DoctorComponent } from './doctor/doctor.component';
 import { PatientComponent } from './patient/patient.component';
+import { authGuard } from '../../core/auth/guard/auth.guard';
+import { authResolver } from '../../core/auth/auth.resolver';
 
 export const DASHBOARD_ROUTES: Routes = [
+  // { path: '', component: DashboardComponent, canActivate: [authGuard] },
   // { path: '', pathMatch: 'full', redirectTo: 'home'},
-  { path: 'admin', component: AdminComponent },
-  { path: 'doctor', component: DoctorComponent },
-  { path: 'patient', component: PatientComponent },
+  {
+    path: '',
+    resolve: { redirect: authResolver },
+    children: [] // Componente vacío, solo redirige
+  },
+  { path: 'admin', component: AdminComponent, canActivate: [authGuard] },
+  { path: 'doctor', component: DoctorComponent, canActivate: [authGuard] },
+  { path: 'patient', component: PatientComponent, canActivate: [authGuard] },
   // {
   //   path:'',
   //   component: HomeComponent,
