@@ -6,7 +6,7 @@
       <div class="relative">
         <input id="name" type="text" placeholder="Juan" formControlName="name"
           class="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          [disabled]="isLoading" />
+           />
       </div>
       <div *ngIf="name?.touched && name?.invalid" class="text-red-500 text-sm">
         <div *ngIf="name?.errors?.['required']">El nombre es obligatorio.</div>
@@ -19,10 +19,10 @@
       <div class="relative">
         <input id="surname" type="text" placeholder="Pérez" formControlName="surname"
           class="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          [disabled]="isLoading" />
+          />
       </div>
-      <div *ngIf="name?.touched && name?.invalid" class="text-red-500 text-sm">
-        <div *ngIf="name?.errors?.['required']">El nombre es obligatorio.</div>
+      <div *ngIf="surname?.touched && surname?.invalid" class="text-red-500 text-sm">
+        <div *ngIf="surname?.errors?.['required']">El apellido es obligatorio.</div>
       </div>
     </div>
 
@@ -32,7 +32,7 @@
       <div class="relative">
         <input id="email" type="email" placeholder="tu@email.com" formControlName="email"
           class="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          [disabled]="isLoading" />
+           />
       </div>
       <div *ngIf="email?.touched && email?.invalid" class="text-red-500 text-sm">
         <div *ngIf="email?.errors?.['required']">El correo es obligatorio.</div>
@@ -45,7 +45,7 @@
       <label for="phone">Teléfono</label>
       <input id="phone" type="tel" placeholder="+34 600 000 000" formControlName="phone"
         class="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        [disabled]="isLoading" />
+         />
     </div>
 
 
@@ -55,7 +55,7 @@
       <div class="relative">
         <input id="birthDate" type="date" formControlName="birthDate"
           class="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          [disabled]="isLoading" />
+           />
       </div>
 
       <!-- Validación -->
@@ -70,7 +70,7 @@
       <div class="relative">
         <select id="gender" formControlName="gender"
           class="w-full pl-3 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-gray-700"
-          [disabled]="isLoading" required>
+          >
           <option value="" disabled selected>Selecciona una opción</option>
           <option value="male">Masculino</option>
           <option value="female">Femenino</option>
@@ -87,14 +87,14 @@
 
     <!-- DNI -->
     <div class="space-y-2">
-      <label for="surname">DNI *</label>
+      <label for="dni">DNI *</label>
       <div class="relative">
-        <input id="surname" type="text" placeholder="12345678" formControlName="surname"
+        <input id="dni" type="text" placeholder="12345678" formControlName="dni"
           class="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          [disabled]="isLoading" />
+         />
       </div>
-      <div *ngIf="name?.touched && name?.invalid" class="text-red-500 text-sm">
-        <div *ngIf="name?.errors?.['required']">El nombre es obligatorio.</div>
+      <div *ngIf="dni?.touched && dni?.invalid" class="text-red-500 text-sm">
+        <div *ngIf="dni?.errors?.['required']">El DNI es obligatorio.</div>
       </div>
     </div>
 
@@ -103,7 +103,7 @@
       <label for="password">Contraseña *</label>
       <input id="password" type="password" placeholder="Mínimo 8 caracteres" formControlName="password"
         class="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        [disabled]="isLoading" />
+         />
       <div *ngIf="password?.touched && password?.invalid" class="text-red-500 text-sm">
         <div *ngIf="password?.errors?.['required']">La contraseña es obligatoria.</div>
         <div *ngIf="password?.errors?.['minlength']">
@@ -117,7 +117,7 @@
       <label for="confirmPassword">Confirmar contraseña *</label>
       <input id="confirmPassword" type="password" placeholder="Repite tu contraseña" formControlName="confirmPassword"
         class="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        [disabled]="isLoading" />
+         />
       <div *ngIf="confirmPassword?.touched && confirmPassword?.invalid" class="text-red-500 text-sm">
         <div *ngIf="confirmPassword?.errors?.['required']">
           Debes confirmar tu contraseña.

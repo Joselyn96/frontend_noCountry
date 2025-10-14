@@ -53,7 +53,7 @@ registerForm: FormGroup;
     this.isLoading = true;
 
     // Simula un delay de backend
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // await new Promise((resolve) => setTimeout(resolve, 1500));
 
     this.success = 'Cuenta creada exitosamente. Redirigiendo...';
 
