@@ -1,6 +1,5 @@
-export interface UserResponse {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
+export interface UpdatePassword {
+  oldPassword: string;
+  password: string;
+  repeatPassword: string;
 }
