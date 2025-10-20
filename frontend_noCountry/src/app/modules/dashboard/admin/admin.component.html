@@ -1,1 +1,55 @@
-<h1>Dashboard del Admin</h1>
+<div className="min-h-screen bg-gradient-to-br from-[#e3f2fd] via-background to-[#e8f5e9]">
+<app-navbar panelTitle="Panel de Administración" userRole="Admin" userSubtitle="Administrador"></app-navbar>
+<div class="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+  <div class="mb-4 sm:mb-8">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-[#1877f2]">
+      Panel de Control
+    </h2>
+    <p class="text-sm sm:text-base text-[#666]">
+      Gestiona usuarios, configuraciones y monitorea el sistema
+    </p>
+  </div>
+  <app-metric-card [stats]="stats"></app-metric-card>
+  <!-- Grid principal -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+  <!-- Main Content -->
+  <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+    <!-- Management Tabs -->
+    <div class="w-full"> 
+      <div class="grid w-full grid-cols-2 sm:grid-cols-4 bg-[#f3f4f6]">
+        @for (tab of tabs; track tab.value) {
+          <button
+            class="text-xs sm:text-sm py-2 px-4 rounded-md transition-colors duration-150"
+            [ngClass]="{
+              'bg-white text-black shadow': activeTab === tab.value,
+              'text-gray-700 hover:bg-gray-200': activeTab !== tab.value
+            }"
+            [attr.data-state]="activeTab === tab.value ? 'active' : ''"
+            (click)="setActive(tab.value)"
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+
+      <!-- Contenido del tab -->
+      <div class="mt-4 p-4 border rounded-md bg-white shadow-sm">
+        @switch (activeTab) {
+          @case ('users') { 
+            <p>Gestión de Usuarios</p> 
+            <app-users-management></app-users-management>
+          }
+          @case ('roles') { <p>Gestión de Roles</p> }
+          @case ('notifications') { <p>Configuración de Notificaciones</p> }
+          @case ('settings') { <p>Configuraciones del Sistema</p> }
+        }
+      </div>
+    </div>
+  </div>
+  <!-- Sidebar opcional -->
+  <div class="bg-white p-4 rounded-md shadow-sm">
+    <p class="text-sm sm:text-base">Panel lateral / información adicional</p>
+  </div>
+</div>
+</div>
+</div>

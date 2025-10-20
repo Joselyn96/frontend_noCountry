@@ -1,0 +1,254 @@
+<div class="border-0 bg-white shadow-sm rounded-2xl">
+  <div class="p-4 sm:p-6">
+    <div class="flex items-center justify-between relative">
+      <h3 class="text-[#1877f2] text-lg sm:text-xl font-semibold">Gestión de Usuarios</h3>
+
+      <!-- Menú desplegable Crear -->
+      <div class="relative">
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 bg-[#1877f2] hover:bg-[#1565c0] text-white px-4 py-2 rounded-lg"
+          (click)="showMenu = !showMenu"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" class="fill-current">
+            <path d="M15 12h6v2h-6v6h-2v-6H7v-2h6V6h2v6z"/>
+          </svg>
+          <span>Crear usuario</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" class="fill-current">
+            <path d="M7 10l5 5 5-5H7z"/>
+          </svg>
+        </button>
+
+        @if (showMenu) {
+          <div class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-md z-50">
+            <button class="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm" (click)="openDoctorDialog()">Médico</button>
+            <button class="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm" (click)="openPatientDialog()">Paciente</button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!--Barra de búsqueda y filtro -->
+<div class="flex gap-3 mt-4">
+  <!-- Input de búsqueda -->
+  <div class="relative flex-1">
+    <i class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#999]">icon</i>
+    <input
+      type="text"
+      placeholder="Buscar usuarios..."
+      [value]="searchTerm()"
+      (input)="searchTerm.set($any($event.target).value)"
+      class="w-full pl-10 pr-3 py-2 text-sm border border-[#e3f2fd] rounded-md focus:outline-none focus:border-[#1877f2]"
+    />
+  </div>
+
+  <!-- Select de filtro -->
+  <select
+    [value]="roleFilter()"
+    (change)="roleFilter.set($any($event.target).value)"
+    class="w-[180px] border border-[#e3f2fd] rounded-md text-sm px-3 py-2 focus:outline-none focus:border-[#1877f2]"
+  >
+    <option value="all">Todos los roles</option>
+    <option value="admin">Administradores</option>
+    <option value="doctor">Médicos</option>
+    <option value="patient">Pacientes</option>
+  </select>
+</div>
+  </div>
+
+  <!-- LISTA DE USUARIOS -->
+  <div class="px-4 sm:px-6 pb-6">
+    <div class="space-y-4">
+      @for (user of filteredUsers(); track user.id) {
+        <div class="flex items-center gap-4 p-4 rounded-lg border border-[#e3f2fd] hover:bg-[#f8fbff] transition-colors">
+          <div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-semibold">
+            {{ user.name.slice(0,1) }}
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <h4 class="font-semibold text-[#1877f2]">{{ user.name }}</h4>
+
+              <span
+                class="text-white text-xs px-2 py-1 rounded-md"
+                [ngClass]="{
+                  'bg-[#f44336]': user.role === 'admin',
+                  'bg-[#1877f2]': user.role === 'doctor',
+                  'bg-[#2ead4e]': user.role === 'patient'
+                }"
+              >
+                {{
+                  user.role === 'admin' ? 'Administrador' :
+                  user.role === 'doctor' ? 'Médico' : 'Paciente'
+                }}
+              </span>
+
+              @if (user.status === 'active') {
+                <span class="text-xs px-2 py-1 rounded-md border border-[#2ead4e] bg-[#e8f5e9] text-[#2ead4e]">Activo</span>
+              } @else {
+                <span class="text-xs px-2 py-1 rounded-md border border-[#999] text-[#666]">Inactivo</span>
+              }
+            </div>
+
+            @if (user.specialty) {
+              <p class="text-sm text-[#2ead4e] mb-1 font-medium">{{ user.specialty }}</p>
+            }
+
+            <div class="flex flex-wrap gap-3 text-xs text-[#999]">
+              <div class="flex items-center gap-1">
+                <svg width="12" height="12" viewBox="0 0 24 24" class="fill-current"><path d="M12 13.065 1.8 6h20.4L12 13.065zM12 15 1 8v10h22V8l-11 7z"/></svg>
+                {{ user.email }}
+              </div>
+              <div class="flex items-center gap-1">
+                <svg width="12" height="12" viewBox="0 0 24 24" class="fill-current"><path d="M6.62 10.79a15.093 15.093 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.07 22 2 13.93 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
+                {{ user.phone }}
+              </div>
+            </div>
+          </div>
+
+          <button class="h-9 w-9 rounded-full hover:bg-[#e3f2fd] flex items-center justify-center">
+            <span class="text-[#1877f2]">⋮</span>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Crear Médico -->
+@if (isDoctorDialogOpen()) {
+  <ng-container *ngTemplateOutlet="doctorModal"></ng-container>
+}
+
+<!-- Modal: Crear Paciente -->
+@if (isPatientDialogOpen()) {
+  <ng-container *ngTemplateOutlet="patientModal"></ng-container>
+}
+
+<!-- Templates -->
+<ng-template #doctorModal>
+  <!-- igual al modal anterior (no se toca diseño original) -->
+   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fadeIn"
+       (click)="closeAllDialogs()">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-[500px] p-6 sm:p-8 relative"
+         (click)="$event.stopPropagation()">
+      
+      <!-- Header -->
+      <div class="mb-4">
+        <h2 class="text-xl sm:text-2xl font-semibold text-[#1877f2]">Crear Cuenta de Médico</h2>
+        <p class="text-gray-600 text-sm mt-1">
+          Complete la información del médico. Se generará una contraseña temporal que será enviada por correo.
+        </p>
+      </div>
+
+      <!-- Formulario -->
+      <form [formGroup]="doctorForm" (ngSubmit)="createDoctor()" class="space-y-4">
+        
+        <!-- Nombre -->
+        <div class="space-y-1">
+          <label class="text-[#1877f2] text-sm font-medium">Nombre completo *</label>
+          <input
+            type="text"
+            formControlName="name"
+            placeholder="Dr. Juan Pérez"
+            class="w-full border border-[#e3f2fd] rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#1877f2]"
+          />
+        </div>
+
+        <!-- Correo -->
+        <div class="space-y-1">
+          <label class="text-[#1877f2] text-sm font-medium">Correo electrónico *</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="doctor@mediconnect.com"
+            class="w-full border border-[#e3f2fd] rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#1877f2]"
+          />
+        </div>
+
+        <!-- Teléfono -->
+        <div class="space-y-1">
+          <label class="text-[#1877f2] text-sm font-medium">Teléfono</label>
+          <input
+            type="tel"
+            formControlName="phone"
+            placeholder="+34 600 000 000"
+            class="w-full border border-[#e3f2fd] rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#1877f2]"
+          />
+        </div>
+
+        <!-- Especialidad -->
+        <div class="space-y-1">
+          <label class="text-[#1877f2] text-sm font-medium">Especialidad</label>
+          <select
+            formControlName="specialty"
+            class="w-full border border-[#e3f2fd] rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#1877f2] text-gray-700"
+          >
+            <option [ngValue]="null" disabled>Selecciona una especialidad</option>
+            <option>Medicina General</option>
+            <option>Cardiología</option>
+            <option>Pediatría</option>
+            <option>Dermatología</option>
+            <option>Traumatología</option>
+            <option>Ginecología</option>
+            <option>Psiquiatría</option>
+            <option>Neurología</option>
+          </select>
+        </div>
+
+        <!-- Número de colegiado -->
+        <div class="space-y-1">
+          <label class="text-[#1877f2] text-sm font-medium">Número de colegiado</label>
+          <input
+            type="text"
+            formControlName="licenseNumber"
+            placeholder="123456789"
+            class="w-full border border-[#e3f2fd] rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#1877f2]"
+          />
+        </div>
+
+        <!-- Mensajes -->
+        @if (errorMsg()) {
+          <div class="mt-3 border border-[#f44336] bg-[#ffebee] text-[#f44336] text-sm rounded-md px-3 py-2">
+            {{ errorMsg() }}
+          </div>
+        }
+        @if (successMsg()) {
+          <div class="mt-3 border border-[#2ead4e] bg-[#e8f5e9] text-[#2ead4e] text-sm rounded-md px-3 py-2">
+            {{ successMsg() }}
+          </div>
+        }
+
+        <!-- Footer -->
+        <div class="flex justify-end gap-2 pt-4">
+          <button
+            type="button"
+            (click)="closeAllDialogs()"
+            class="px-4 py-2 text-sm rounded-md border border-[#e3f2fd] text-gray-700 hover:bg-gray-100"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="isCreating()"
+            class="px-4 py-2 text-sm rounded-md bg-[#1877f2] text-white hover:bg-[#1565c0] flex items-center justify-center gap-2"
+          >
+            @if (isCreating()) {
+              <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="white" stroke-width="4"></circle>
+                <path class="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8z"></path>
+              </svg>
+              Creando...
+            } @else {
+              Crear Médico
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #patientModal>
+  <!-- igual medidas que el modal anterior -->
+</ng-template>
