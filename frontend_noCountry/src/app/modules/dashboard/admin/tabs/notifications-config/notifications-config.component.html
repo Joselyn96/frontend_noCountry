@@ -1,0 +1,255 @@
+<div class="space-y-6">
+    <!-- Botón de editar arriba de todo -->
+    <div class="flex justify-end">
+        <button type="button" (click)="toggleEditMode()" [class]="'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-primary-blue text-sm font-medium ' + 
+            (isEditMode ? 'bg-blue-light' : 'hover:bg-blue-light')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                <path d="m15 5 4 4"></path>
+            </svg>
+            <span>{{ isEditMode ? 'Cancelar edición' : 'Editar' }}</span>
+        </button>
+    </div>
+
+    <!-- Email Notifications -->
+    <div class="border-0 bg-white shadow-sm rounded-2xl">
+        <div class="p-6 pb-4">
+            <h3 class="flex items-center gap-2 text-primary-blue font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                </svg>
+                Notificaciones por Email
+            </h3>
+            <p class="text-sm text-[#999]">Configura los recordatorios automáticos por correo electrónico</p>
+        </div>
+
+        <div class="p-6 pt-0 space-y-6">
+            <div class="space-y-4">
+                @for (notification of emailNotifications; track notification.id) {
+                <div class="flex items-center justify-between p-4 rounded-lg border border-blue-light">
+                    <div class="space-y-0.5">
+                        <label [for]="notification.id" class="text-sm font-medium text-primary-blue">
+                            {{ notification.label }}
+                        </label>
+                        <p class="text-sm text-[#999]">{{ notification.description }}</p>
+                    </div>
+
+                    <!-- Switch (deshabilitado cuando NO está en modo edición) -->
+                    <button type="button" role="switch" [id]="notification.id"
+                        [attr.aria-checked]="notification.checked" (click)="toggleEmailNotification(notification.id)"
+                        [disabled]="!isEditMode" [class]="'inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus:outline-none ' + 
+                        (notification.checked ? 'bg-primary-blue' : 'bg-text-muted') + 
+                        (!isEditMode ? ' opacity-60 cursor-not-allowed' : ' cursor-pointer')">
+                        <span
+                            [class]="'pointer-events-none block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform ' + (notification.checked ? 'translate-x-5' : 'translate-x-0')"></span>
+                    </button>
+                </div>
+                }
+            </div>
+
+            <div class="space-y-3 pt-4 border-t border-blue-light">
+                <label class="text-sm font-medium text-primary-blue">Tiempo de anticipación para recordatorios</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="relative">
+                        <!-- Dropdown bloqueado cuando NO está en modo edición -->
+                        <button type="button" (click)="isEditMode && (showEmailDropdown = !showEmailDropdown)"
+                            [disabled]="!isEditMode" [class]="'h-10 w-full rounded-lg bg-white px-3 text-sm focus:outline-none shadow text-left flex items-center justify-between ' + 
+                            (!isEditMode ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer')">
+                            <span>{{ getSelectedLabel() }}</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+
+                        @if (showEmailDropdown && isEditMode) {
+                        <div
+                            class="absolute left-0 right-0 mt-1 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-200">
+                            @for (option of emailReminderOptions; track option.value) {
+                            <button type="button"
+                                class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors"
+                                [class.bg-primary-blue]="selectedEmailReminder === option.value"
+                                [class.text-white]="selectedEmailReminder === option.value"
+                                [class.text-gray-900]="selectedEmailReminder !== option.value"
+                                (click)="selectEmailOption(option.value)">
+                                {{ option.label }}
+                            </button>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <input type="email" [(ngModel)]="testEmail" placeholder="Email de prueba" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + 
+                        (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')" />
+                </div>
+
+                @if (isEditMode) {
+                <button (click)="sendTestEmail()"
+                    class="w-full h-9 rounded-md border border-blue-light bg-transparent text-sm text-primary-blue hover:bg-blue-light">
+                    Enviar email de prueba
+                </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- SMS Notifications -->
+    <div class="border-0 bg-white shadow-sm rounded-2xl">
+        <div class="p-6 pb-4">
+            <h3 class="flex items-center gap-2 text-primary-blue font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Notificaciones por SMS
+            </h3>
+            <p class="text-sm text-[#999]">Configura los recordatorios automáticos por mensaje de texto</p>
+        </div>
+
+        <div class="p-6 pt-0 space-y-6">
+            <div class="space-y-4">
+                @for (notification of smsNotifications; track notification.id) {
+                <div class="flex items-center justify-between p-4 rounded-lg border border-blue-light">
+                    <div class="space-y-0.5">
+                        <label [for]="notification.id" class="text-sm font-medium text-primary-blue">
+                            {{ notification.label }}
+                        </label>
+                        <p class="text-sm text-[#999]">{{ notification.description }}</p>
+                    </div>
+
+                    <button type="button" role="switch" [id]="notification.id"
+                        [attr.aria-checked]="notification.checked" (click)="toggleSmsNotification(notification.id)"
+                        [disabled]="!isEditMode" [class]="'inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus:outline-none ' + 
+                        (notification.checked ? 'bg-primary-blue' : 'bg-text-muted') + 
+                        (!isEditMode ? ' opacity-60 cursor-not-allowed' : ' cursor-pointer')">
+                        <span
+                            [class]="'pointer-events-none block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform ' + (notification.checked ? 'translate-x-5' : 'translate-x-0')"></span>
+                    </button>
+                </div>
+                }
+            </div>
+
+            <div class="space-y-3 pt-4 border-t border-blue-light">
+                <label class="text-sm font-medium text-primary-blue">Configuración de SMS</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="relative">
+                        <button type="button" (click)="isEditMode && (showSmsDropdown = !showSmsDropdown)"
+                            [disabled]="!isEditMode" [class]="'h-10 w-full rounded-lg bg-white px-3 text-sm focus:outline-none shadow-sm text-left flex items-center justify-between ' + 
+                            (!isEditMode ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer')">
+                            <span>{{ getSelectedSmsLabel() }}</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+
+                        @if (showSmsDropdown && isEditMode) {
+                        <div
+                            class="absolute left-0 right-0 mt-1 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-200">
+                            @for (option of smsReminderOptions; track option.value) {
+                            <button type="button"
+                                class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors"
+                                [class.bg-primary-blue]="selectedSmsReminder === option.value"
+                                [class.text-white]="selectedSmsReminder === option.value"
+                                [class.text-gray-900]="selectedSmsReminder !== option.value"
+                                (click)="selectSmsOption(option.value)">
+                                {{ option.label }}
+                            </button>
+                            }
+                        </div>
+                        }
+                    </div>
+                    <input type="tel" [(ngModel)]="testPhone" placeholder="Teléfono de prueba" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + 
+                        (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')" />
+                </div>
+
+                @if (isEditMode) {
+                <button (click)="sendTestSms()"
+                    class="w-full h-9 rounded-md border border-blue-light bg-transparent text-sm text-primary-blue hover:bg-blue-light">
+                    Enviar SMS de prueba
+                </button>
+                }
+            </div>
+
+            <div class="rounded-lg border border-blue-light px-4 py-3 text-sm">
+                Créditos SMS disponibles: <strong>2,450</strong> • Costo por SMS: <strong>0.05€</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Integration -->
+    <div class="border-0 bg-white shadow-sm rounded-2xl">
+        <div class="p-6 pb-4">
+            <h3 class="flex items-center gap-2 text-primary-blue font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
+                    <line x1="16" x2="16" y1="2" y2="6"></line>
+                    <line x1="8" x2="8" y1="2" y2="6"></line>
+                    <line x1="3" x2="21" y1="10" y2="10"></line>
+                </svg>
+                Integración con Calendarios
+            </h3>
+            <p class="text-sm text-[#999]">Sincroniza citas con calendarios externos</p>
+        </div>
+
+        <div class="p-6 pt-0 space-y-4">
+            @for (integration of calendarIntegrations; track integration.id) {
+            <div class="flex items-center justify-between p-4 rounded-lg border border-blue-light">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-light flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary-blue" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
+                            <line x1="16" x2="16" y1="2" y2="6"></line>
+                            <line x1="8" x2="8" y1="2" y2="6"></line>
+                            <line x1="3" x2="21" y1="10" y2="10"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-primary-blue">{{ integration.name }}</label>
+                        <p class="text-sm text-[#999]">{{ integration.description }}</p>
+                    </div>
+                </div>
+
+                <button type="button" role="switch" [attr.aria-checked]="integration.checked"
+                    (click)="toggleCalendarIntegration(integration.id)" [disabled]="!isEditMode" [class]="'inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus:outline-none ' + 
+                    (integration.checked ? 'bg-primary-blue' : 'bg-blue-light') + 
+                    (!isEditMode ? ' opacity-60 cursor-not-allowed' : ' cursor-pointer')">
+                    <span
+                        [class]="'pointer-events-none block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform ' + (integration.checked ? 'translate-x-5' : 'translate-x-0')"></span>
+                </button>
+            </div>
+            }
+
+            @if (isEditMode) {
+            <div class="pt-4 border-t border-blue-light">
+                <button (click)="configureIntegrations()"
+                    class="w-full h-10 rounded-md bg-primary-blue text-white hover:bg-primary-bluetext-sm">
+                    Configurar Integraciones
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Save Button (solo en modo edición) -->
+    @if (isEditMode) {
+    <div class="flex justify-end gap-3">
+        <button (click)="cancel()"
+            class="h-10 px-4 rounded-md border border-blue-light bg-transparent text-sm text-primary-blue hover:bg-blue-light">
+            Cancelar
+        </button>
+        <button (click)="saveConfiguration()"
+            class="h-10 px-4 rounded-md bg-primary-blue text-white hover:bg-primary-blue-dark text-sm">
+            Guardar Configuración
+        </button>
+    </div>
+    }
+</div>
