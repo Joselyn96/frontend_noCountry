@@ -1,11 +1,11 @@
-<div className="min-h-screen bg-gradient-to-br from-[#e3f2fd] via-background to-[#e8f5e9]">
+<div className="min-h-screen">
 <app-navbar panelTitle="Panel de Administración" userRole="Admin" userSubtitle="Administrador"></app-navbar>
 <div class="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
   <div class="mb-4 sm:mb-8">
-    <h2 class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-[#1877f2]">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-primary-blue">
       Panel de Control
     </h2>
-    <p class="text-sm sm:text-base text-[#666]">
+    <p class="text-sm sm:text-base text-text-muted">
       Gestiona usuarios, configuraciones y monitorea el sistema
     </p>
   </div>
@@ -16,12 +16,12 @@
   <div class="lg:col-span-2 space-y-4 sm:space-y-6">
     <!-- Management Tabs -->
     <div class="w-full"> 
-      <div class="grid w-full grid-cols-2 sm:grid-cols-4 bg-[#f3f4f6]">
+      <div class="grid w-full grid-cols-2 sm:grid-cols-4 bg-gray-soft rounded-md p-1">
         @for (tab of tabs; track tab.value) {
           <button
             class="text-xs sm:text-sm py-2 px-4 rounded-md transition-colors duration-150"
             [ngClass]="{
-              'bg-white text-black shadow': activeTab === tab.value,
+              'bg-primary-blue text-white shadow': activeTab === tab.value,
               'text-gray-700 hover:bg-gray-200': activeTab !== tab.value
             }"
             [attr.data-state]="activeTab === tab.value ? 'active' : ''"
@@ -36,7 +36,6 @@
       <div class="mt-4 p-4 border rounded-md bg-white shadow-sm">
         @switch (activeTab) {
           @case ('users') { 
-            <p>Gestión de Usuarios</p> 
             <app-users-management></app-users-management>
           }
           @case ('roles') { <p>Gestión de Roles</p> }

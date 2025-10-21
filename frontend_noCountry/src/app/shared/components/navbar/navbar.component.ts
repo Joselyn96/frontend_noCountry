@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
@@ -11,8 +11,4 @@ export class NavbarComponent {
   @Input() userRole: string = 'Admin'; // rol del usuario
   @Input() userSubtitle: string = 'Administrador'; // subtitulo del usuario
 
-  logout() {
-    // logout
-    console.log('Logout');
   }
-}

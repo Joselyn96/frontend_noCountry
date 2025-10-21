@@ -69,7 +69,6 @@ export class UsersManagementComponent {
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      address: [''],
     });
   }
 
