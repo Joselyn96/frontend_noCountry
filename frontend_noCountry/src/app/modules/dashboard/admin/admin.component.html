@@ -35,14 +35,14 @@
       <!-- Contenido del tab -->
       <div class="mt-4">
         @switch (activeTab) {
-          @case ('users') { 
-            <app-users-management></app-users-management>
+          @case ('patients') { 
+            <app-patients-management></app-patients-management>
+          }
+          @case ('doctors') { 
+            <app-doctors-management></app-doctors-management>
           }
           @case ('roles') { 
             <app-roles-permissions></app-roles-permissions>
-          }
-          @case ('notifications') { 
-            <app-notifications-config></app-notifications-config>
           }
           @case ('settings') {
             <app-system-settings></app-system-settings>

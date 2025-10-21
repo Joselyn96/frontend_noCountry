@@ -3,16 +3,16 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { MetricCardComponent } from '../../../shared/components/metric-card/metric-card.component';
 import { StatData } from '../../../shared/interfaces/stat-data.interface';
-import { UsersManagementComponent } from './tabs/users-management/users-management.component';
 import { RolesPermissionsComponent } from './tabs/roles-permissions/roles-permissions.component';
-import { NotificationsConfigComponent } from './tabs/notifications-config/notifications-config.component';
 import { SystemSettingsComponent } from './tabs/system-settings/system-settings.component';
+import { PatientsManagementComponent } from './tabs/patients-management/patients-management.component';
+import { DoctorsManagementComponent } from './tabs/doctors-management/doctors-management.component';
 
-type TabValue = 'users' | 'roles' | 'notifications' | 'settings';
+type TabValue = 'doctors' | 'roles' | 'patients' | 'settings';
 type Tab = { label: string; value: TabValue };
 @Component({
   selector: 'app-admin',
-  imports: [NavbarComponent, MetricCardComponent, CommonModule, UsersManagementComponent, RolesPermissionsComponent, NotificationsConfigComponent, SystemSettingsComponent],
+  imports: [NavbarComponent, MetricCardComponent, CommonModule, PatientsManagementComponent, DoctorsManagementComponent, RolesPermissionsComponent, SystemSettingsComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })
@@ -53,13 +53,13 @@ export class AdminComponent {
   ];
 
   tabs = [
-    { label: 'Usuarios', value: 'users' },
+    { label: 'Pacientes', value: 'patients' },
+    { label: 'Doctores', value: 'doctors' },
     { label: 'Roles', value: 'roles' },
-    { label: 'Notif.', value: 'notifications' },
     { label: 'Sistema', value: 'settings' } // opcional
   ] as const satisfies ReadonlyArray<Tab>;
 
-  activeTab: TabValue = 'users';
+  activeTab: TabValue = 'patients';
 
   setActive(value: TabValue) {
     this.activeTab = value;

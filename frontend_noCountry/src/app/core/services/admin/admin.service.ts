@@ -10,13 +10,29 @@ import { UpdatePassword } from '../../models/user';
   providedIn: 'root'
 })
 export class AdminService {
-  path = environment.apiUrl + 'patient';
+  pathPatient = environment.apiUrl + 'patient';
+  pathDoctor = environment.apiUrl + 'doctor';
+  pathUser = environment.apiUrl + 'users';
 
   constructor(private httpClient: HttpClient) { }
 
+  getAllDoctors(): Observable<HttpResponse<Object>> {
+    return this.httpClient.get(
+      this.pathDoctor,
+      { observe: 'response' }
+    );
+  }
+
+  getAllPatients(): Observable<HttpResponse<Object>> {
+    return this.httpClient.get(
+      this.pathPatient,
+      { observe: 'response' }
+    );
+  }
+
   createDoctor(createDoctor: DoctorCreate): Observable<HttpResponse<Object>> {
     return this.httpClient.post(
-      this.path + '/create_doctor',
+      this.pathDoctor + '/create_doctor',
       createDoctor,
       { observe: 'response' }
     );
@@ -24,7 +40,7 @@ export class AdminService {
 
   createPatient(createPatient: PatientCreateAdmin): Observable<HttpResponse<Object>> {
     return this.httpClient.post(
-      this.path + '/create_patient',
+      this.pathPatient + '/create_patient',
       createPatient,
       { observe: 'response' }
     );
@@ -32,7 +48,7 @@ export class AdminService {
 
   updateDoctor(updateDoctor: DoctorUpdate): Observable<HttpResponse<Object>> {
     return this.httpClient.put(
-      this.path + '/update_doctor',
+      this.pathDoctor + '/update_doctor',
       updateDoctor,
       { observe: 'response' }
     );
@@ -40,7 +56,7 @@ export class AdminService {
 
   updatePatient(updatePatient: PatientUpdateAdmin): Observable<HttpResponse<Object>> {
     return this.httpClient.put(
-      this.path + '/update',
+      this.pathPatient + '/update',
       updatePatient,
       { observe: 'response' }
     );
@@ -50,7 +66,7 @@ export class AdminService {
     const params = new HttpParams().set('active', active.toString());
 
     return this.httpClient.put(
-      this.path + '/update_activation',
+      this.pathUser + '/update_activation',
       null,
       { params, observe: 'response' }
     );
@@ -58,7 +74,7 @@ export class AdminService {
 
   updatePassword(updatePass: UpdatePassword): Observable<HttpResponse<Object>> {
     return this.httpClient.put(
-      this.path + '/update_password',
+      this.pathUser + '/update_password',
       updatePass,
       { observe: 'response' }
     );

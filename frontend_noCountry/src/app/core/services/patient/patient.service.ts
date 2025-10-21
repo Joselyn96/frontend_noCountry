@@ -39,4 +39,11 @@ export class PatientService {
       })
     );
   }
+
+  getAllPatients(): Observable<HttpResponse<Object>> {
+    return this.httpClient.get(
+      this.path,
+      { observe: 'response' }
+    );
+  }
 }
