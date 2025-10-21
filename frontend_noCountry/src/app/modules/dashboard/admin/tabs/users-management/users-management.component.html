@@ -13,8 +13,8 @@
           <svg width="16" height="16" viewBox="0 0 24 24" class="fill-current">
             <path d="M15 12h6v2h-6v6h-2v-6H7v-2h6V6h2v6z"/>
           </svg>
-          <span>Crear usuario</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" class="fill-current">
+          <span class="hidden sm:inline">Crear usuario</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" class="fill-current hidden sm:inline">
             <path d="M7 10l5 5 5-5H7z"/>
           </svg>
         </button>
@@ -32,7 +32,19 @@
 <div class="flex gap-3 mt-4">
   <!-- Input de búsqueda -->
   <div class="relative flex-1">
-    <i class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#999]">icon</i>
+     <svg 
+    class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#999]" 
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+      stroke-width="2" 
+      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+    />
+  </svg>
     <input
       type="text"
       placeholder="Buscar usuarios..."
@@ -43,16 +55,33 @@
   </div>
 
   <!-- Select de filtro -->
-  <select
-    [value]="roleFilter()"
-    (change)="roleFilter.set($any($event.target).value)"
-    class="w-[180px] border border-blue-light rounded-md text-sm px-3 py-2 focus:outline-none focus:border-primary-blue"
-  >
-    <option value="all">Todos los roles</option>
-    <option value="admin">Administradores</option>
-    <option value="doctor">Médicos</option>
-    <option value="patient">Pacientes</option>
-  </select>
+  <div class="relative w-[180px]">
+  <button 
+    type="button" 
+    (click)="showRoleDropdown = !showRoleDropdown"
+    class="h-10 w-full rounded-lg bg-white px-3 text-sm focus:outline-none shadow text-left flex items-center justify-between border border-blue-light">
+    <span>{{ getSelectedRoleLabel() }}</span>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+
+  @if (showRoleDropdown) {
+  <div class="absolute left-0 right-0 mt-1 bg-white rounded-lg shadow-lg z-50 overflow-hidden border border-gray-200">
+    @for (option of roleOptions; track option.value) {
+    <button 
+      type="button"
+      class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors"
+      [class.bg-primary-blue]="roleFilter() === option.value"
+      [class.text-white]="roleFilter() === option.value"
+      [class.text-gray-900]="roleFilter() !== option.value"
+      (click)="selectRole(option.value)">
+      {{ option.label }}
+    </button>
+    }
+  </div>
+  }
+</div>
 </div>
   </div>
 
@@ -251,7 +280,7 @@
 <ng-template #patientModal>
   <!-- igual medidas que el modal anterior -->
    <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fadeIn"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fadeIn"
     (click)="closeAllDialogs()"
   >
     <div

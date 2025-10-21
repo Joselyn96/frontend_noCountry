@@ -33,14 +33,20 @@
       </div>
 
       <!-- Contenido del tab -->
-      <div class="mt-4 p-4 border rounded-md bg-white shadow-sm">
+      <div class="mt-4">
         @switch (activeTab) {
           @case ('users') { 
             <app-users-management></app-users-management>
           }
-          @case ('roles') { <p>Gestión de Roles</p> }
-          @case ('notifications') { <p>Configuración de Notificaciones</p> }
-          @case ('settings') { <p>Configuraciones del Sistema</p> }
+          @case ('roles') { 
+            <app-roles-permissions></app-roles-permissions>
+          }
+          @case ('notifications') { 
+            <app-notifications-config></app-notifications-config>
+          }
+          @case ('settings') {
+            <app-system-settings></app-system-settings>
+          }
         }
       </div>
     </div>

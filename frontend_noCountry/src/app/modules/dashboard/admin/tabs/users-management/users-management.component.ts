@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 
@@ -177,4 +177,32 @@ export class UsersManagementComponent {
       this.successMsg.set('');
     }, 1200);
   }
+  showRoleDropdown = false;
+
+roleOptions = [
+  { value: 'all', label: 'Todos los roles' },
+  { value: 'admin', label: 'Administradores' },
+  { value: 'doctor', label: 'Médicos' },
+  { value: 'patient', label: 'Pacientes' }
+];
+
+selectRole(value: string): void {
+  this.roleFilter.set(value as RoleKey | 'all');
+  this.showRoleDropdown = false;
+}
+
+getSelectedRoleLabel(): string {
+  const selected = this.roleOptions.find(opt => opt.value === this.roleFilter());
+  return selected ? selected.label : 'Todos los roles';
+}
+
+// Si ya tienes un @HostListener, agrégale esto:
+@HostListener('document:click', ['$event'])
+clickOutside(event: Event): void {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.relative')) {
+    this.showRoleDropdown = false;
+    this.showMenu = false; // Para el menú de crear usuario
+  }
+}
 }

@@ -4,12 +4,15 @@ import { NavbarComponent } from '../../../shared/components/navbar/navbar.compon
 import { MetricCardComponent } from '../../../shared/components/metric-card/metric-card.component';
 import { StatData } from '../../../shared/interfaces/stat-data.interface';
 import { UsersManagementComponent } from './tabs/users-management/users-management.component';
+import { RolesPermissionsComponent } from './tabs/roles-permissions/roles-permissions.component';
+import { NotificationsConfigComponent } from './tabs/notifications-config/notifications-config.component';
+import { SystemSettingsComponent } from './tabs/system-settings/system-settings.component';
 
 type TabValue = 'users' | 'roles' | 'notifications' | 'settings';
 type Tab = { label: string; value: TabValue };
 @Component({
   selector: 'app-admin',
-  imports: [NavbarComponent, MetricCardComponent, CommonModule, UsersManagementComponent],
+  imports: [NavbarComponent, MetricCardComponent, CommonModule, UsersManagementComponent, RolesPermissionsComponent, NotificationsConfigComponent, SystemSettingsComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })
