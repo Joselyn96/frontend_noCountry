@@ -93,7 +93,7 @@
 
 
 import { Injectable } from '@angular/core';
-import { Observable, tap, catchError, throwError, BehaviorSubject, map } from 'rxjs';
+import { Observable, tap, catchError, throwError, BehaviorSubject, map, of, shareReplay, finalize } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -166,6 +166,39 @@ export class AuthService {
       })
     );
   }
+
+  // private currentUser: any = null;
+  // private inFlightCurrentUser$?: Observable<any>;
+  // getAuthCurrent(): Observable<any> {
+  //   // si ya lo tenemos en memoria, devolverlo inmediatamente
+  //   if (this.currentUser) {
+  //     return of({ user: this.currentUser });
+  //   }
+
+  //   // si ya hay una petición en curso, devolver la misma observable compartida
+  //   if (this.inFlightCurrentUser$) {
+  //     return this.inFlightCurrentUser$;
+  //   }
+
+  //   const req$ = this.httpClient.get('/api/auth/current_user').pipe(
+  //     tap((res: any) => {
+  //       this.currentUser = res?.user ?? null;
+  //     }),
+  //     // compartir el resultado entre múltiples suscriptores
+  //     shareReplay(1),
+  //     catchError(err => {
+  //       // limpiar inFlight en caso de error para permitir reintento posterior
+  //       return throwError(() => err);
+  //     }),
+  //     finalize(() => {
+  //       // una vez completado (exito o error), limpiar el inFlight observable
+  //       this.inFlightCurrentUser$ = undefined;
+  //     })
+  //   );
+
+  //   this.inFlightCurrentUser$ = req$;
+  //   return req$;
+  // }
 
   isLogin() {
     return this.tokenService.existToken();

@@ -14,7 +14,8 @@ type Tab = { label: string; value: TabValue };
   selector: 'app-admin',
   imports: [NavbarComponent, MetricCardComponent, CommonModule, PatientsManagementComponent, DoctorsManagementComponent, RolesPermissionsComponent, SystemSettingsComponent],
   templateUrl: './admin.component.html',
-  styleUrl: './admin.component.css'
+  styleUrl: './admin.component.css',
+  standalone: true
 })
 export class AdminComponent {
   stats: StatData[] = [

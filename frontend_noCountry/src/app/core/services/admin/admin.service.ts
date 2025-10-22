@@ -16,27 +16,7 @@ export class AdminService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getAllDoctors(): Observable<HttpResponse<Object>> {
-    return this.httpClient.get(
-      this.pathDoctor,
-      { observe: 'response' }
-    );
-  }
-
-  getAllPatients(): Observable<HttpResponse<Object>> {
-    return this.httpClient.get(
-      this.pathPatient,
-      { observe: 'response' }
-    );
-  }
-
-  createDoctor(createDoctor: DoctorCreate): Observable<HttpResponse<Object>> {
-    return this.httpClient.post(
-      this.pathDoctor + '/create_doctor',
-      createDoctor,
-      { observe: 'response' }
-    );
-  }
+  
 
   createPatient(createPatient: PatientCreateAdmin): Observable<HttpResponse<Object>> {
     return this.httpClient.post(

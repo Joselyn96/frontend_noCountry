@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, HostListener, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DoctorResponse } from '../../../../../core/models/doctor';
+import { DoctorService } from '../../../../../core/services/doctor/doctor.service';
+import { catchError, debounceTime, distinctUntilChanged, filter, of, Subject, Subscription, switchMap } from 'rxjs';
 
 type RoleKey = 'admin' | 'doctor' | 'patient';
 type StatusKey = 'active' | 'inactive';
@@ -23,37 +26,27 @@ interface User {
   styleUrl: './doctors-management.component.css'
 })
 export class DoctorsManagementComponent {
-users = signal<User[]>([
-    { id: 1, name: 'Dra. María González', email: 'maria.gonzalez@mediconnect.com', phone: '+34 600 111 222', role: 'doctor', specialty: 'Cardiología', status: 'active', joinDate: '2024-01-15' },
-    { id: 2, name: 'Juan Pérez', email: 'juan.perez@email.com', phone: '+34 600 333 444', role: 'patient', specialty: null, status: 'active', joinDate: '2024-02-20' },
-    { id: 3, name: 'Dr. Carlos Ruiz', email: 'carlos.ruiz@mediconnect.com', phone: '+34 600 555 666', role: 'doctor', specialty: 'Medicina General', status: 'active', joinDate: '2024-01-10' },
-    { id: 4, name: 'Ana Martínez', email: 'ana.martinez@email.com', phone: '+34 600 777 888', role: 'patient', specialty: null, status: 'inactive', joinDate: '2024-03-05' },
-    { id: 5, name: 'Admin Sistema', email: 'admin@mediconnect.com', phone: '+34 600 999 000', role: 'admin', specialty: null, status: 'active', joinDate: '2024-01-01' },
-  ]);
+  doctors: DoctorResponse[] | null = null;
+  private search$ = new Subject<string>();
+  private searchSub?: Subscription;
+  public readonly Array = Array;
 
-  roleConfig: Record<RoleKey, { label: string; color: string }> = {
-    admin: { label: 'Administrador', color: 'bg-[#f44336]' },
-    doctor: { label: 'Médico', color: 'bg-[#1877f2]' },
-    patient: { label: 'Paciente', color: 'bg-[#2ead4e]' },
-  };
+  // Pagination
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(10);
+  totalPages = signal<number>(0);
 
-  // Forms
-  doctorForm!: FormGroup;
-  patientForm!: FormGroup;
+  paginatedPatients = computed(() => {
+    const list = this.doctors ?? [];
+    const page = Math.max(1, this.currentPage());
+    const size = Math.max(1, this.pageSize());
+    const start = (page - 1) * size;
+    return list.slice(start, start + size);
+  });
 
-  // Estado UI
-  searchTerm = signal<string>('');
-  roleFilter = signal<'all' | RoleKey>('all');
-  showMenu = false;
 
-  isDoctorDialogOpen = signal<boolean>(false);
-  isPatientDialogOpen = signal<boolean>(false);
 
-  isCreating = signal<boolean>(false);
-  errorMsg = signal<string>('');
-  successMsg = signal<string>('');
-
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private doctorService: DoctorService) {
     this.doctorForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -62,24 +55,93 @@ users = signal<User[]>([
       licenseNumber: [''],
     });
 
-    this.patientForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phone: [''],
-      dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+    this.searchSub = this.search$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      filter(q => !!q && q.trim().length >= 3),
+      switchMap(q =>
+        this.doctorService.getDoctorsByName(q).pipe(
+          catchError(err => {
+            console.error('Error searching patients:', err);
+            return of({ body: { doctors: [] } });
+          })
+        )
+      )
+    ).subscribe({
+      next: (response: any) => {
+        this.doctors = (response?.body?.doctors as DoctorResponse[]) ?? [];
+        console.log('Search results:', this.doctors);
+      },
+      error: err => console.error('Search subscription error:', err)
     });
   }
 
-  filteredUsers = computed(() => {
-    const q = this.searchTerm().toLowerCase().trim();
-    const rf = this.roleFilter();
+  async ngOnInit() {
+    await this.getDoctors();
+  }
 
-    return this.users().filter(u => {
-      const matchesSearch = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
-      const matchesRole = rf === 'all' || u.role === rf;
-      return matchesSearch && matchesRole;
-    });
-  });
+  async getDoctors() {
+    this.doctorService.getAllDoctors(this.pageSize(), this.currentPage()).subscribe({
+      next: (response: any) => {
+        console.log(response);
+        this.doctors = response.body.response.data as DoctorResponse[];
+        this.totalPages.set(response.body.response.metadata.totalPages);
+        console.log(this.doctors);
+      },
+      error: (error) => {
+        console.log(error);
+        this.doctors = [];
+      },
+      complete: () => {
+        console.log('Request completed');
+      },
+    }
+    );
+  }
+
+  onSearchInput(value: string) {
+    const v = (value ?? '').toString();
+    this.searchTerm.set(v);
+    this.getDoctorsByName(v);
+  }
+
+  async getDoctorsByName(name: string) {
+    const q = (name ?? '').toString().trim();
+
+    if (q.length === 0) {
+      this.searchTerm.set('');
+      await this.getDoctors();
+      return;
+    }
+
+    if (q.length < 3) {
+      this.searchTerm.set(q);
+      return;
+    }
+
+    this.search$.next(q);
+  }
+
+  ngOnDestroy(): void {
+    this.searchSub?.unsubscribe();
+    this.search$.complete();
+  }
+
+  // Forms
+  doctorForm!: FormGroup;
+
+  // Estado UI
+  searchTerm = signal<string>('');
+  roleFilter = signal<'all' | RoleKey>('all');
+  showMenu = false;
+
+  isDoctorDialogOpen = signal<boolean>(false);
+
+  isCreating = signal<boolean>(false);
+  errorMsg = signal<string>('');
+  successMsg = signal<string>('');
+
+
 
   openDoctorDialog() {
     this.showMenu = false;
@@ -89,17 +151,8 @@ users = signal<User[]>([
     this.isDoctorDialogOpen.set(true);
   }
 
-  openPatientDialog() {
-    this.showMenu = false;
-    this.errorMsg.set('');
-    this.successMsg.set('');
-    this.patientForm.reset();
-    this.isPatientDialogOpen.set(true);
-  }
-
   closeAllDialogs() {
     this.isDoctorDialogOpen.set(false);
-    this.isPatientDialogOpen.set(false);
   }
 
   async createDoctor() {
@@ -113,21 +166,6 @@ users = signal<User[]>([
     await new Promise(res => setTimeout(res, 1500));
 
     const v = this.doctorForm.value;
-    const nextId = Math.max(...this.users().map(u => u.id)) + 1;
-
-    this.users.update(list => [
-      ...list,
-      {
-        id: nextId,
-        name: v.name!,
-        email: v.email!,
-        phone: v.phone || '',
-        role: 'doctor',
-        specialty: v.specialty || null,
-        status: 'active',
-        joinDate: new Date().toISOString().slice(0, 10),
-      }
-    ]);
 
     this.successMsg.set('Cuenta de médico creada exitosamente.');
     this.doctorForm.reset();
@@ -139,68 +177,18 @@ users = signal<User[]>([
     }, 1200);
   }
 
-  async createPatient() {
-    if (this.patientForm.invalid) {
-      this.errorMsg.set('Por favor completa todos los campos obligatorios');
-      this.patientForm.markAllAsTouched();
-      return;
-    }
-
-    this.isCreating.set(true);
-    await new Promise(res => setTimeout(res, 1500));
-
-    const v = this.patientForm.value;
-    const nextId = Math.max(...this.users().map(u => u.id)) + 1;
-
-    this.users.update(list => [
-      ...list,
-      {
-        id: nextId,
-        name: v.name!,
-        email: v.email!,
-        phone: v.phone || '',
-        role: 'patient',
-        specialty: null,
-        status: 'active',
-        joinDate: new Date().toISOString().slice(0, 10),
-      }
-    ]);
-
-    this.successMsg.set('Cuenta de paciente creada exitosamente.');
-    this.patientForm.reset();
-
-    setTimeout(() => {
-      this.isCreating.set(false);
-      this.isPatientDialogOpen.set(false);
-      this.successMsg.set('');
-    }, 1200);
+  setPage(page: number) {
+    const p = Math.min(Math.max(1, page), this.totalPages());
+    this.currentPage.set(p);
+    this.getDoctors();
   }
-  showRoleDropdown = false;
 
-roleOptions = [
-  { value: 'all', label: 'Todos los roles' },
-  { value: 'admin', label: 'Administradores' },
-  { value: 'doctor', label: 'Médicos' },
-  { value: 'patient', label: 'Pacientes' }
-];
-
-selectRole(value: string): void {
-  this.roleFilter.set(value as RoleKey | 'all');
-  this.showRoleDropdown = false;
-}
-
-getSelectedRoleLabel(): string {
-  const selected = this.roleOptions.find(opt => opt.value === this.roleFilter());
-  return selected ? selected.label : 'Todos los roles';
-}
-
-// Si ya tienes un @HostListener, agrégale esto:
-@HostListener('document:click', ['$event'])
-clickOutside(event: Event): void {
-  const target = event.target as HTMLElement;
-  if (!target.closest('.relative')) {
-    this.showRoleDropdown = false;
-    this.showMenu = false; // Para el menú de crear usuario
+  prevPage() {
+    this.setPage(this.currentPage() - 1);
   }
-}
+
+  nextPage() {
+    this.setPage(this.currentPage() + 1);
+  }
+
 }
