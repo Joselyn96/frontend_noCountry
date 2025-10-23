@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
 import { DoctorCreate, DoctorUpdate } from '../../models/doctor';
-import { PatientCreateAdmin, PatientUpdateAdmin } from '../../models/patient';
+import { PatientUpdateAdmin } from '../../models/patient';
 import { UpdatePassword } from '../../models/user';
 
 @Injectable({
@@ -18,13 +18,13 @@ export class AdminService {
 
   
 
-  createPatient(createPatient: PatientCreateAdmin): Observable<HttpResponse<Object>> {
-    return this.httpClient.post(
-      this.pathPatient + '/create_patient',
-      createPatient,
-      { observe: 'response' }
-    );
-  }
+  // createPatient(createPatient: PatientCreateAdmin): Observable<HttpResponse<Object>> {
+  //   return this.httpClient.post(
+  //     this.pathPatient + '/create_patient',
+  //     createPatient,
+  //     { observe: 'response' }
+  //   );
+  // }
 
   updateDoctor(updateDoctor: DoctorUpdate): Observable<HttpResponse<Object>> {
     return this.httpClient.put(

@@ -45,7 +45,7 @@ export interface DoctorCreateByAdmin {
   lastName: string,
   phone: string | null,
   email: string,
-  specialty: string;
+  specialtyId: number;
   licenseNumber: string;
   bio: string;
 }

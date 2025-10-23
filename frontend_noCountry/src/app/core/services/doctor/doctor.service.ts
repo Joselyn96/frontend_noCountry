@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { DoctorCreate, DoctorCreateByAdmin } from '../../models/doctor';
 import { Observable } from 'rxjs';
 

@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, HostListener, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DoctorResponse } from '../../../../../core/models/doctor';
+import { DoctorCreateByAdmin, DoctorResponse } from '../../../../../core/models/doctor';
 import { DoctorService } from '../../../../../core/services/doctor/doctor.service';
 import { catchError, debounceTime, distinctUntilChanged, filter, of, Subject, Subscription, switchMap } from 'rxjs';
+import { SpecialtyService } from '../../../../../core/services/specialty/specialty.service';
 
 type RoleKey = 'admin' | 'doctor' | 'patient';
 type StatusKey = 'active' | 'inactive';
@@ -27,6 +28,10 @@ interface User {
 })
 export class DoctorsManagementComponent {
   doctors: DoctorResponse[] | null = null;
+  // specialties state (loaded when opening the create doctor dialog)
+  specialties = signal<{ id: number; name: string }[]>([]);
+  specialtiesLoading = signal<boolean>(false);
+  specialtiesError = signal<string>('');
   private search$ = new Subject<string>();
   private searchSub?: Subscription;
   public readonly Array = Array;
@@ -46,13 +51,15 @@ export class DoctorsManagementComponent {
 
 
 
-  constructor(private fb: FormBuilder, private doctorService: DoctorService) {
+  constructor(private fb: FormBuilder, private doctorService: DoctorService, private specialtyService: SpecialtyService) {
     this.doctorForm = this.fb.group({
-      name: ['', Validators.required],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
-      specialty: ['null', Validators.required],
-      licenseNumber: [''],
+      specialtyID: [0, Validators.required],
+      licenseNumber: ['', Validators.required],
+      bio: ['']
     });
 
     this.searchSub = this.search$.pipe(
@@ -148,7 +155,36 @@ export class DoctorsManagementComponent {
     this.errorMsg.set('');
     this.successMsg.set('');
     this.doctorForm.reset();
+    // load specialties first (if not already loaded) so the select is populated
+    this.loadSpecialties();
     this.isDoctorDialogOpen.set(true);
+  }
+
+  loadSpecialties() {
+    if (this.specialties().length > 0 || this.specialtiesLoading()) return;
+
+    this.specialtiesLoading.set(true);
+    this.specialtiesError.set('');
+
+    this.specialtyService.getAllSpecialty().subscribe({
+      next: (response: any) => {
+        console.log('Specialties loaded:', response);
+        // try several common shapes: response.body.response.data || response.body.data || response.body
+        const body = response?.body ?? response;
+        const data = body?.response?.data ?? body?.data ?? body;
+        // map to {id,name} array
+        const list = Array.isArray(data) ? data.map((s: any) => ({ id: s.id ?? s._id ?? s.ID ?? 0, name: s.name ?? s.title ?? '' })) : [];
+        this.specialties.set(list);
+      },
+      error: (err: any) => {
+        console.error('Error loading specialties:', err);
+        this.specialtiesError.set('Error loading specialties');
+        this.specialties.set([]);
+      },
+      complete: () => {
+        this.specialtiesLoading.set(false);
+      }
+    });
   }
 
   closeAllDialogs() {
@@ -163,18 +199,38 @@ export class DoctorsManagementComponent {
     }
 
     this.isCreating.set(true);
-    await new Promise(res => setTimeout(res, 1500));
 
     const v = this.doctorForm.value;
+    console.log(v);
+    const payload: DoctorCreateByAdmin = {
+      firstName: v.firstName,
+      lastName: v.lastName,
+      phone: v.phone || null,
+      email: v.email,
+      specialtyId: Number(v.specialtyID),
+      licenseNumber: v.licenseNumber,
+      bio: v.bio || ''
+    };
 
-    this.successMsg.set('Cuenta de médico creada exitosamente.');
-    this.doctorForm.reset();
-
-    setTimeout(() => {
-      this.isCreating.set(false);
-      this.isDoctorDialogOpen.set(false);
-      this.successMsg.set('');
-    }, 1200);
+    this.doctorService.createDoctorByAdmin(payload).subscribe({
+      next: () => {
+        this.successMsg.set('Cuenta de médico creada exitosamente.');
+        this.doctorForm.reset();
+        this.getDoctors();
+      },
+      error: (err) => {
+        console.error('Error creating doctor:', err);
+        this.errorMsg.set('Error al crear médico');
+      },
+      complete: () => {
+        setTimeout(() => {
+          this.isCreating.set(false);
+          this.isDoctorDialogOpen.set(false);
+          this.successMsg.set('');
+          this.errorMsg.set('');
+        }, 900);
+      }
+    });
   }
 
   setPage(page: number) {

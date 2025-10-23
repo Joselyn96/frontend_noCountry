@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, HostListener, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PatientService } from '../../../../../core/services/patient/patient.service';
-import { PatientResponse } from '../../../../../core/models/patient';
+import { PatientCreateByAdmin, PatientResponse } from '../../../../../core/models/patient';
 import { catchError, debounceTime, distinctUntilChanged, filter, of, Subject, Subscription, switchMap } from 'rxjs';
 
 type RoleKey = 'admin' | 'doctor' | 'patient';
@@ -63,9 +63,14 @@ export class PatientsManagementComponent {
   constructor(private fb: FormBuilder, private patientService: PatientService) {
     this.patientForm = this.fb.group({
       name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      surname: ['', Validators.required],
       phone: [''],
-      dni: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+      email: ['', [Validators.required, Validators.email]],
+      birthDate: ['', Validators.required],
+      gender: ['', Validators.required], 
+      nationality: ['', Validators.required],
+      typeIdentification: ['', Validators.required],
+      identification: ['', Validators.required],
     });
 
     this.searchSub = this.search$.pipe(
@@ -166,33 +171,43 @@ export class PatientsManagementComponent {
     }
 
     this.isCreating.set(true);
-    await new Promise(res => setTimeout(res, 1500));
 
+    // build payload according to PatientCreateByAdmin
     const v = this.patientForm.value;
-    // const nextId = Math.max(...this.users().map(u => u.id)) + 1;
+    const payload: PatientCreateByAdmin = {
+      firstName: v.name,
+      lastName: v.surname,
+      email: v.email,
+      phone: v.phone || undefined,
+      dateOfBirth: new Date(v.birthDate),
+      gender: v.gender,
+      identification: v.identification,
+      typeIdentification: v.typeIdentification,
+      nationality: v.nationality,
+    };
 
-    // this.users.update(list => [
-    //   ...list,
-    //   {
-    //     id: nextId,
-    //     name: v.name!,
-    //     email: v.email!,
-    //     phone: v.phone || '',
-    //     role: 'patient',
-    //     specialty: null,
-    //     status: 'active',
-    //     joinDate: new Date().toISOString().slice(0, 10),
-    //   }
-    // ]);
-
-    this.successMsg.set('Cuenta de paciente creada exitosamente.');
-    this.patientForm.reset();
-
-    setTimeout(() => {
-      this.isCreating.set(false);
-      this.isPatientDialogOpen.set(false);
-      this.successMsg.set('');
-    }, 1200);
+    // call service to create patient as admin and refresh list on success
+    this.patientService.patientCreateByAdmin(payload).subscribe({
+      next: (res: any) => {
+        this.successMsg.set('Cuenta de paciente creada exitosamente.');
+        // refresh patients from server (resets pagination)
+        this.getPatients();
+        this.patientForm.reset();
+      },
+      error: (err) => {
+        console.error('Error creating patient:', err);
+        this.errorMsg.set('Error al crear paciente');
+      },
+      complete: () => {
+        // small delay to show success state
+        setTimeout(() => {
+          this.isCreating.set(false);
+          this.isPatientDialogOpen.set(false);
+          this.successMsg.set('');
+          this.errorMsg.set('');
+        }, 900);
+      }
+    });
   }
 
   setPage(page: number) {

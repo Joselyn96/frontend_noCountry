@@ -42,31 +42,38 @@
         <p class="text-gray-500">No se encontraron doctores</p>
       </div>
       } @else {
-        <!-- Pagination controls -->
-    <div class="flex items-center justify-center mt-4">
-      <div class="flex items-center gap-2">
-        <button (click)="prevPage()" [disabled]="currentPage() === 1"
-          class="px-3 py-1 border rounded-md text-sm disabled:opacity-50">Prev</button>
+      <!-- Pagination controls -->
+      <div class="flex items-center justify-center mt-4">
+        <div class="flex items-center gap-2">
+          <button (click)="prevPage()" [disabled]="currentPage() === 1"
+            class="px-3 py-1 border rounded-md text-sm disabled:opacity-50">Prev</button>
 
-        <ng-container *ngFor="let p of Array(totalPages()) ; let i = index">
-          <button (click)="setPage(i+1)"
-            [class]="currentPage() === (i+1) ? 'px-3 py-1 rounded-md bg-primary-blue text-white text-sm' : 'px-3 py-1 border rounded-md text-sm'">
-            {{ i + 1 }}
-          </button>
-        </ng-container>
+          <ng-container *ngFor="let p of Array(totalPages()) ; let i = index">
+            <button (click)="setPage(i+1)"
+              [class]="currentPage() === (i+1) ? 'px-3 py-1 rounded-md bg-primary-blue text-white text-sm' : 'px-3 py-1 border rounded-md text-sm'">
+              {{ i + 1 }}
+            </button>
+          </ng-container>
 
-        <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
-          class="px-3 py-1 border rounded-md text-sm disabled:opacity-50">Next</button>
+          <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
+            class="px-3 py-1 border rounded-md text-sm disabled:opacity-50">Next</button>
+        </div>
       </div>
-    </div>
 
 
       @for (doctor of doctors; track doctor.id) {
       <div
         class="flex items-center gap-4 p-4 mt-4 rounded-lg border border-blue-light hover:bg-blue-hover transition-colors">
+        @if (doctor.urlImage !== null) {
+        <div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-semibold">
+          <img src="{{ doctor.urlImage }}" alt="" class="h-12 w-12 rounded-full object-cover">
+        </div>
+        } @else {
         <div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-semibold">
           {{ doctor.lastName.slice(0,1).toUpperCase() + doctor.firstName.slice(0,1).toLocaleUpperCase() }}
         </div>
+        }
+
 
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1 flex-wrap">
@@ -116,7 +123,6 @@
 
 <!-- Templates -->
 <ng-template #doctorModal>
-  <!-- igual al modal anterior (no se toca diseño original) -->
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50  animate-fadeIn"
     (click)="closeAllDialogs()">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-[500px] p-6 sm:p-8 relative"
@@ -133,11 +139,28 @@
       <!-- Formulario -->
       <form [formGroup]="doctorForm" (ngSubmit)="createDoctor()" class="space-y-4">
 
-        <!-- Nombre -->
-        <div class="space-y-1">
-          <label class="text-primary-blue text-sm font-medium">Nombre completo *</label>
-          <input type="text" formControlName="name" placeholder="Dr. Juan Pérez"
-            class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- First name -->
+          <div class="space-y-1">
+            <label class="text-primary-blue text-sm font-medium">Nombre(s) *</label>
+            <input type="text" formControlName="firstName" placeholder="Juan"
+              class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" />
+            <div *ngIf="doctorForm.get('firstName')?.touched && doctorForm.get('firstName')?.invalid"
+              class="text-red-500 text-sm mt-1">
+              <div *ngIf="doctorForm.get('firstName')?.hasError('required')">El nombre es obligatorio.</div>
+            </div>
+          </div>
+
+          <!-- Last name -->
+          <div class="space-y-1">
+            <label class="text-primary-blue text-sm font-medium">Apellido(s) *</label>
+            <input type="text" formControlName="lastName" placeholder="Pérez"
+              class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" />
+            <div *ngIf="doctorForm.get('lastName')?.touched && doctorForm.get('lastName')?.invalid"
+              class="text-red-500 text-sm mt-1">
+              <div *ngIf="doctorForm.get('lastName')?.hasError('required')">El apellido es obligatorio.</div>
+            </div>
+          </div>
         </div>
 
         <!-- Correo -->
@@ -145,6 +168,11 @@
           <label class="text-primary-blue text-sm font-medium">Correo electrónico *</label>
           <input type="email" formControlName="email" placeholder="doctor@mediconnect.com"
             class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" />
+          <div *ngIf="doctorForm.get('email')?.touched && doctorForm.get('email')?.invalid"
+            class="text-red-500 text-sm mt-1">
+            <div *ngIf="doctorForm.get('email')?.hasError('required')">El correo es obligatorio.</div>
+            <div *ngIf="doctorForm.get('email')?.hasError('email')">Ingrese un correo válido.</div>
+          </div>
         </div>
 
         <!-- Teléfono -->
@@ -152,30 +180,56 @@
           <label class="text-primary-blue text-sm font-medium">Teléfono</label>
           <input type="tel" formControlName="phone" placeholder="+34 600 000 000"
             class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" />
+          <div *ngIf="doctorForm.get('phone')?.touched && doctorForm.get('phone')?.invalid"
+            class="text-red-500 text-sm mt-1">
+            <div *ngIf="doctorForm.get('phone')?.hasError('pattern')">Número de teléfono inválido.</div>
+          </div>
         </div>
 
         <!-- Especialidad -->
         <div class="space-y-1">
-          <label class="text-primary-blue text-sm font-medium">Especialidad</label>
-          <select formControlName="specialty"
-            class="w-full border border-blue-light rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-primary-blue">
-            <option [ngValue]="null" disabled>Selecciona una especialidad</option>
-            <option>Medicina General</option>
-            <option>Cardiología</option>
-            <option>Pediatría</option>
-            <option>Dermatología</option>
-            <option>Traumatología</option>
-            <option>Ginecología</option>
-            <option>Psiquiatría</option>
-            <option>Neurología</option>
-          </select>
+          <label class="text-primary-blue text-sm font-medium">Especialidad *</label>
+          <div class="relative">
+            <select formControlName="specialtyID"
+              class="w-full border border-blue-light rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-primary-blue bg-white">
+              <option value="0" disabled>Select a specialty</option>
+              <ng-container *ngIf="!specialtiesLoading() && specialties().length > 0">
+                <option *ngFor="let s of specialties()" [value]="s.id">{{ s.name }}</option>
+              </ng-container>
+            </select>
+            <div *ngIf="specialtiesLoading()" class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              Loading...</div>
+            <div *ngIf="specialtiesError()" class="text-red-500 text-sm mt-1">{{ specialtiesError() }}</div>
+          </div>
+          <div *ngIf="doctorForm.get('specialtyID')?.touched && doctorForm.get('specialtyID')?.invalid"
+            class="text-red-500 text-sm mt-1">
+            <div *ngIf="doctorForm.get('specialtyID')?.hasError('required')">La especialidad es obligatoria.</div>
+          </div>
         </div>
 
         <!-- Número de colegiado -->
         <div class="space-y-1">
-          <label class="text-primary-blue text-sm font-medium">Número de colegiado</label>
-          <input type="text" formControlName="licenseNumber" placeholder="123456789"
+          <label class="text-primary-blue text-sm font-medium">Licencia *</label>
+          <input type="text" formControlName="licenseNumber" placeholder="MD1231"
             class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" />
+          <div *ngIf="doctorForm.get('licenseNumber')?.touched && doctorForm.get('licenseNumber')?.invalid"
+            class="text-red-500 text-sm mt-1">
+            <div *ngIf="doctorForm.get('licenseNumber')?.hasError('required')">El número de licencia es obligatorio.
+            </div>
+            <div *ngIf="doctorForm.get('licenseNumber')?.hasError('minlength')">El número de licencia es demasiado
+              corto.</div>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="space-y-1">
+          <label class="text-primary-blue text-sm font-medium">Biografía</label>
+          <textarea formControlName="bio" rows="4" placeholder="Breve biografía / experiencia"
+            class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue"></textarea>
+          <div *ngIf="doctorForm.get('bio')?.touched && doctorForm.get('bio')?.invalid"
+            class="text-red-500 text-sm mt-1">
+            <div *ngIf="doctorForm.get('bio')?.hasError('maxlength')">La biografía es demasiado larga.</div>
+          </div>
         </div>
 
         <!-- Mensajes -->
@@ -213,4 +267,3 @@
     </div>
   </div>
 </ng-template>
-

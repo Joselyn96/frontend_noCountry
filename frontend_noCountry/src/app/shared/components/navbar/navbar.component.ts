@@ -1,4 +1,5 @@
 import { Component, inject, Input } from '@angular/core';
+import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -11,4 +12,10 @@ export class NavbarComponent {
   @Input() userRole: string = 'Admin'; // rol del usuario
   @Input() userSubtitle: string = 'Administrador'; // subtitulo del usuario
 
+  constructor(private autService: AuthService) {}
+
+  logout() {
+    this.autService.logout();
   }
+
+}
