@@ -93,8 +93,8 @@
 
 
 import { Injectable } from '@angular/core';
-import { Observable, tap, catchError, throwError, BehaviorSubject, map } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
+import { Observable, tap, catchError, throwError, BehaviorSubject, map, of, shareReplay, finalize } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthCurrentUser } from '../models/auth';
@@ -144,12 +144,23 @@ export class AuthService {
     );
   }
 
-
-
-  logout() {
-    this.tokenService.deleteToken();
-    this.authUserSubject.next(null);
-    this.router.navigate(['/login']);
+  logout(): void {
+    // Attempt server-side logout to clear HttpOnly cookie if present.
+    // Regardless of server response, clear client state in finalize.
+    this.httpClient.post(this.route + '/logout', {}, { observe: 'response' }).pipe(
+      catchError((err) => {
+        // log and continue with client cleanup
+        console.warn('Server logout failed or not available:', err);
+        return of(null);
+      }),
+      finalize(() => {
+        // client-side cleanup
+        try { this.tokenService.deleteToken(); } catch (e) { console.warn('deleteToken error', e); }
+        this.authUserSubject.next(null);
+        // TODO: cancel any polling/subscriptions that query current_user
+        this.router.navigate(['/login']);
+      })
+    ).subscribe();
   }
 
   getAuthCurrent(): Observable<{ user: AuthCurrentUser }> {

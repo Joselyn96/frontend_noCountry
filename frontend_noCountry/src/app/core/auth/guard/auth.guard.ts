@@ -20,6 +20,26 @@ export const authGuard: CanActivateFn = (route, state) => {
     router.navigate(['/login']);
     return false;
   }
+
+  const currentPath = state.url;
+
+  // try cached user first (no HTTP)
+  const cached = authService.getCurrentUser();
+  if (cached) {
+    console.log('Verificando acceso - Rol:', cached.role, 'Ruta:', currentPath);
+    const role = (cached as any).role;
+    if (role === 'admin' && currentPath.includes('/dashboard/admin')) return true;
+    if (role === 'doctor' && currentPath.includes('/dashboard/doctor')) return true;
+    if (role === 'paciente' && currentPath.includes('/dashboard/patient')) return true;
+
+    // redirect to correct dashboard if role doesn't match route
+    if (role === 'admin') { router.navigate(['/dashboard/admin']); return false; }
+    if (role === 'doctor') { router.navigate(['/dashboard/doctor']); return false; }
+    if (role === 'paciente') { router.navigate(['/dashboard/patient']); return false; }
+
+    router.navigate(['/login']);
+    return false;
+  }
   
   return authService.getAuthCurrent().pipe(
     map((response: any) => {

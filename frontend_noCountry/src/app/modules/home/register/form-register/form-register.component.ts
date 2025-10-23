@@ -152,6 +152,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { PatientService } from '../../../../core/services/patient/patient.service';
+import { PatientCreate } from '../../../../core/models/patient';
 
 
 @Component({
@@ -161,7 +162,7 @@ import { PatientService } from '../../../../core/services/patient/patient.servic
   styleUrl: './form-register.component.css'
 })
 export class FormRegisterComponent {
-registerForm: FormGroup;
+  registerForm: FormGroup;
   isLoading = false;
   error = '';
   success = '';
@@ -170,27 +171,31 @@ registerForm: FormGroup;
 
   constructor(private fb: FormBuilder, private router: Router, private patientService: PatientService) {
     this.registerForm = this.fb.group({
-      name: ['', Validators.required],
-      surname: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      dateOfBirth: ['', Validators.required],    
+      identification: ['', Validators.required],
+      typeIdentification: ['dni', Validators.required], 
+      nationality: ['', Validators.required],
+      gender: ['male', Validators.required],    
       phone: [''],
-      dni: ['', Validators.required],
-      gender: ['', Validators.required],
-      birthDate: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      repeatPassword: ['', Validators.required],
     });
   }
 
-  get name() { return this.registerForm.get('name'); }
-  get surname() { return this.registerForm.get('surname'); }
-  get email() { return this.registerForm.get('email'); }
-  get phone() { return this.registerForm.get('phone'); }
-  get password() { return this.registerForm.get('password'); }
-  get confirmPassword() { return this.registerForm.get('confirmPassword'); }
-  get birthDate() { return this.registerForm.get('birthDate'); }
+  get firstName() { return this.registerForm.get('firstName'); }
+  get lastName() { return this.registerForm.get('lastName'); }
+  get dateOfBirth() { return this.registerForm.get('dateOfBirth'); }
+  get identification() { return this.registerForm.get('identification'); }
+  get typeIdentification() { return this.registerForm.get('typeIdentification'); }
+  get nationality() { return this.registerForm.get('nationality'); }
   get gender() { return this.registerForm.get('gender'); }
-  get dni() { return this.registerForm.get('dni'); }
+  get phone() { return this.registerForm.get('phone'); }
+  get email() { return this.registerForm.get('email'); }
+  get password() { return this.registerForm.get('password'); }
+  get repeatPassword() { return this.registerForm.get('repeatPassword'); }
 
   async onSubmit() {
     this.error = '';
@@ -202,37 +207,34 @@ registerForm: FormGroup;
       return;
     }
 
-    const { password, confirmPassword } = this.registerForm.value;
-    if (password !== confirmPassword) {
+    const { password, repeatPassword } = this.registerForm.value;
+    console.log(password, repeatPassword);
+    console.log(this.registerForm.value);
+    if (password !== repeatPassword) {
       this.error = 'Las contraseñas no coinciden';
       return;
     }
 
-    this.isLoading = true;
-     this.registerForm.disable();
-const formData = this.registerForm.value;
 
-    const patientData = {
-      firstName: formData.name,
-      lastName: formData.surname,
-      phone: formData.phone || null,
-      email: formData.email,
-      password: formData.password,
-      repeatPassword: formData.confirmPassword,
-      dateOfBirth: formData.birthDate,
-      gender: formData.gender,
-      dni: formData.dni
+    this.isLoading = true;
+    this.registerForm.disable();
+    const raw = this.registerForm.value;
+    const payload: PatientCreate = {
+      firstName: raw.firstName,
+      lastName: raw.lastName,
+      email: raw.email,
+      phone: raw.phone || null,
+      password: raw.password,
+      repeatPassword: raw.repeatPassword,
+      dateOfBirth: new Date(raw.dateOfBirth),
+      gender: raw.gender,
+      identification: raw.identification,
+      typeIdentification: raw.typeIdentification,
+      nationality: raw.nationality,
     };
 
-    // await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // this.success = 'Cuenta creada exitosamente. Redirigiendo...';
-
-    // setTimeout(() => {
-    //   this.router.navigate(['/login']);
-    // }, 1000);
-    console.log('[REGISTER] Payload a /patient/create:', patientData);
-    this.patientService.registerPatient(patientData)
+    console.log('[REGISTER] Payload a /patient/create:', payload);
+    this.patientService.registerPatient(payload)
       .pipe(finalize(() => {
         this.isLoading = false;
         this.registerForm.enable(); // ✅ Rehabilitar formulario
@@ -241,14 +243,14 @@ const formData = this.registerForm.value;
         next: (response: any) => {
           console.log('Registro exitoso:', response);
           this.success = 'Cuenta creada exitosamente. Redirigiendo al login...';
-          
+
           setTimeout(() => {
             this.router.navigate(['/login']);
-          }, 1500);
+          }, 1000);
         },
         error: (err: any) => {
           console.error('Error en registro:', err);
-          
+
           if (err.status === 400) {
             this.error = 'El correo electrónico ya está registrado';
           } else if (err.status === 422) {
