@@ -7,8 +7,26 @@ import { AppointmentManagementComponent } from '../tabs/appointment-management/a
 import { DataManagementComponent } from '../tabs/data-management/data-management.component';
 import { ClinicalHistoryComponent } from "../tabs/clinical-history/clinical-history.component";
 import { PatientMetricComponent } from '../../../shared/components/patient-metric/patient-metric.component';
-import { AppointmentResponse } from '../tabs/appointment-management/appointment-management.component'; // Import AppointmentResponse
 
+
+export interface AppointmentResponse {
+  id: number;
+  availability_id: number;
+  doctor_id: number;
+  patient_id: number;
+  day: string; // o Date
+  start_time: string;
+  end_time: string;
+  status: 'confirmado' | 'cancelado' | 'completado';
+  consultation_type: 'virtual' | 'presencial';
+  // Estos campos vendrían de un JOIN en el backend
+  patientName?: string;
+  doctorName?: string;
+  doctorSpecialty?: string;
+}
+
+type RoleKey = 'admin' | 'doctor' | 'patient' | 'appointment';
+type StatusKey = 'active' | 'inactive';
 interface NextAppointmentDisplay extends AppointmentResponse {
   virtualUrl?: string;
   bgColor?: string;

@@ -8,7 +8,7 @@ import { Appointment, AppointmentCreate, PaginatedAppointments, TimeSlot, Appoin
   providedIn: 'root'
 })
 export class AppointmentService {
-  private apiUrl = `${environment.apiUrl}/appointments`;
+  private apiUrl = `${environment.apiUrl}appointments`;
 
   constructor(private http: HttpClient) { }
 
@@ -33,7 +33,7 @@ export class AppointmentService {
     return this.http.get<PaginatedAppointments>(`${this.apiUrl}/doctor/${id}`, { params });
   }
 
-  getAllAppointmentsByPatient(id: string, status?: string, limit?: number, page?: number): Observable<PaginatedAppointments> {
+  getAllAppointmentsByPatient(id: number, status?: string, limit?: number, page?: number): Observable<PaginatedAppointments> {
     let params = new HttpParams();
     if (status) params = params.append('status', status);
     if (page) params = params.append('page', page.toString());

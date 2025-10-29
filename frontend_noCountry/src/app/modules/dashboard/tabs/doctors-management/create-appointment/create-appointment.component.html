@@ -42,11 +42,17 @@
       </div>
 
       <div *ngIf="step === 2" class="flex flex-col items-center justify-center gap-4">
+        <p class="text-lg text-gray-600 text-center">
+          Días disponibles para turnos:<br>
+          <span class="font-semibold text-blue-600">
+            {{ getEnabledDaysText() === "" ? "No hay turnos disponibles" : getEnabledDaysText() }}
+          </span>
+        </p>
         <p class="text-lg text-gray-600">Seleccione un día disponible</p>
         <lucide-angular [img]="getIcon('calendar-1')" class="w-20 h-20 sm:w-16 sm:h-16 text-blue-600">
         </lucide-angular>
         <input type="date" class="w-full border rounded-md px-3 py-2" [min]="today" [(ngModel)]="selectedDay" name="day"
-          required>
+          (change)="validateDay($event)" required>
       </div>
 
       <div *ngIf="step === 3" class="space-y-4 flex flex-col items-center justify-center">

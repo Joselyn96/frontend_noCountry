@@ -20,7 +20,7 @@ export interface AppointmentCreate {
     day: string;
     start_time: string;
     end_time: string;
-    consultation_type: ConsultationType;
+    consultation_type: "virtual" | "presencial";
 }
 
 export interface AppointmentFilter {
@@ -39,4 +39,26 @@ export interface PaginatedAppointments {
 export interface TimeSlot {
     start_time: string;
     end_time: string;
+}
+
+export interface AppointmentResponse {
+    id: number;
+    availability_id: number;
+    doctor_id: number;
+    patient_id: number | null; // Puede ser nulo si la cita es un bloqueo o no está asignada
+    day: string;              // Formato DATE (YYYY-MM-DD)
+    start_time: string;       // Formato TIME (HH:MM:SS)
+    end_time: string;         // Formato TIME (HH:MM:SS)
+    status: AppointmentStatus;
+    consultation_type: ConsultationType;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface AppointmentDetailResponse extends AppointmentResponse {
+    doctorFirstName: string;
+    doctorLastName: string;
+    patientFirstName: string | null;
+    patientLastName: string | null;
+    specialityName: string;
 }

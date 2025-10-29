@@ -1,10 +1,24 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, LucideIconData, Calendar, Link, Users, UserCheck, Activity, TrendingUp, Info, MonitorPlay } from 'lucide-angular';
-import { AppointmentResponse } from '../../../modules/dashboard/tabs/appointment-management/appointment-management.component';
 import { StatData } from '../../interfaces/stat-data.interface';
 
+
 // Extendemos AppointmentResponse para incluir virtualUrl para la visualización en esta tarjeta
+interface AppointmentResponse {
+  id: number;
+  availability_id: number;
+  doctor_id: number;
+  patient_id: number;
+  day: string;
+  start_time: string;
+  end_time: string;
+  status: 'confirmado' | 'pendiente' | 'cancelado';
+  consultation_type: 'presencial' | 'virtual';
+  patientName?: string;
+  doctorName?: string;
+  doctorSpecialty?: string;
+}
 interface NextAppointmentDisplay extends AppointmentResponse {
   virtualUrl?: string; // URL opcional para consultas virtuales
   bgColor?: string;
