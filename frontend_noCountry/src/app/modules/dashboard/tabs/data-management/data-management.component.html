@@ -1,0 +1,404 @@
+<div class="space-y-8">
+    <!-- Botón de editar arriba de todo -->
+    <div class="flex justify-end">
+        <button type="button" (click)="toggleEditMode()" [class]="'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-primary-blue text-sm font-medium ' + 
+            (isEditMode ? 'bg-blue-light' : 'hover:bg-blue-light')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                <path d="m15 5 4 4"></path>
+            </svg>
+            <span>{{ isEditMode ? 'Cancelar edición' : 'Editar' }}</span>
+        </button>
+    </div>
+
+    <!-- User Information -->
+    <div class="border-0 bg-white shadow-sm rounded-2xl">
+        <div class="p-6 pb-4">
+            <h3 class="flex items-center gap-2 text-primary-blue font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Datos Personales
+            </h3>
+            <p class="text-sm text-[#999]">Gestiona tu información personal y de contacto.</p>
+        </div>
+
+        @if (currentUser) {
+        <!-- Foto de perfil -->
+        <div class="flex justify-center mb-6">
+            <div class="relative">
+                <div *ngIf="imagePreviewUrl || currentUser.urlImage; else initials">
+                    <img [src]="imagePreviewUrl || currentUser.urlImage || 'assets/images/user/default.png'"
+                        alt="Foto de perfil"
+                        class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-md">
+                </div>
+                <ng-template #initials>
+                    <div
+                        class="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-md">
+                        <span class="text-5xl font-medium text-gray-600">{{ userInitials }}</span>
+                    </div>
+                </ng-template>
+                <button (click)="fileInput.click()" type="button"
+                    class="absolute bottom-0 right-0 bg-primary-blue text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-primary-blue-hover transition-transform duration-200 ease-in-out hover:scale-110 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z">
+                        </path>
+                        <circle cx="12" cy="13" r="3"></circle>
+                    </svg>
+                </button>
+                <input type="file" class="hidden" #fileInput accept="image/png, image/jpeg"
+                    (change)="onFileSelected($event)">
+            </div>
+        </div>
+
+        <!-- Botones de confirmación de imagen -->
+        @if (hasImageChanges) {
+        <div class="flex justify-center gap-3 mb-6 px-6">
+            <button type="button" (click)="cancelImageChange()"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                Cancelar cambio de imagen
+            </button>
+            <button type="button" (click)="confirmImageChange()" [disabled]="isUploadingImage"
+                class="px-4 py-2 text-sm font-medium text-white bg-primary-blue hover:bg-primary-blue-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                @if (isUploadingImage) {
+                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                <span>Subiendo...</span>
+                } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Confirmar imagen</span>
+                }
+            </button>
+        </div>
+        }
+
+        <!-- Formulario de datos -->
+        <div class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <!-- First Name -->
+                <div class="space-y-1">
+                    <label for="firstName" class="text-sm font-medium text-primary-blue">Nombre</label>
+                    <input id="firstName" type="text" [(ngModel)]="currentUser.firstName" 
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                
+                <!-- Last Name -->
+                <div class="space-y-1">
+                    <label for="lastName" class="text-sm font-medium text-primary-blue">Apellidos</label>
+                    <input id="lastName" type="text" [(ngModel)]="currentUser.lastName" 
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                
+                <!-- Email -->
+                <div class="space-y-1">
+                    <label for="email" class="text-sm font-medium text-primary-blue">Email</label>
+                    <input id="email" type="email" [(ngModel)]="currentUser.email" 
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode" required
+                        pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" #emailInput="ngModel" [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none ' +
+        (emailInput.invalid && emailInput.touched ? 'border-red-500' : 'focus:border-primary-blue') +
+        (!isEditMode ? ' opacity-60 cursor-not-allowed' : '')">
+                    @if (emailInput.invalid && emailInput.touched) {
+                    <p class="text-red-500 text-xs">Ingrese un email válido</p>
+                    }
+                </div>
+
+                <!-- Phone -->
+                <div class="space-y-1">
+                    <label for="phone" class="text-sm font-medium text-primary-blue">Teléfono</label>
+                    <input id="phone" type="tel" [(ngModel)]="currentUser.phone" 
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+
+                <!-- Campos específicos de Paciente -->
+                @if (currentUser.role === 'paciente' && isPatient(currentUser.data)) {
+                <div class="space-y-1">
+                    <label for="dateOfBirth" class="text-sm font-medium text-primary-blue">Fecha de Nacimiento</label>
+                    <input id="dateOfBirth" type="date" [(ngModel)]="fecha" 
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode" 
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' +
+    (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                
+                <div class="space-y-1">
+                    <label for="gender" class="text-sm font-medium text-primary-blue">Género</label>
+                    <select id="gender" [(ngModel)]="currentUser.data.gender" 
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode" 
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' +
+        (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                        <option value="">Seleccione...</option>
+                        <option value="male">Masculino</option>
+                        <option value="female">Femenino</option>
+                        <option value="other">Otro</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label for="typeIdentification" class="text-sm font-medium text-primary-blue">
+                        Tipo de Identificación
+                    </label>
+                    <select id="typeIdentification" [(ngModel)]="currentUser.data.typeIdentification"
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode" 
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' +
+        (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                        <option value="">Seleccione...</option>
+                        <option value="dni">DNI</option>
+                        <option value="cc">CC</option>
+                        <option value="ci">CI</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label for="identification" class="text-sm font-medium text-primary-blue">Nº de
+                        Identificación</label>
+                    <input id="identification" type="text" [(ngModel)]="currentUser.data.identification"
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                
+                <div class="space-y-1">
+                    <label for="nationality" class="text-sm font-medium text-primary-blue">Nacionalidad</label>
+                    <input id="nationality" type="text" [(ngModel)]="currentUser.data.nationality"
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                }
+
+                <!-- Campos específicos de Médico -->
+                @if (currentUser.role === 'medico' && isDoctor(currentUser.data)) {
+                <div class="space-y-1">
+                    <label for="specialty" class="text-sm font-medium text-primary-blue">Especialidad</label>
+                    <input id="specialty" type="text" [(ngModel)]="currentUser.data.specialty" 
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                
+                <div class="space-y-1">
+                    <label for="licenseNumber" class="text-sm font-medium text-primary-blue">Nº de Licencia</label>
+                    <input id="licenseNumber" type="text" [(ngModel)]="currentUser.data.licenseNumber"
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                
+                <div class="md:col-span-2 space-y-1">
+                    <label for="bio" class="text-sm font-medium text-primary-blue">Biografía</label>
+                    <textarea id="bio" [(ngModel)]="currentUser.data.bio" 
+                        (ngModelChange)="onUserDataChange()" [disabled]="!isEditMode" rows="3"
+                        [class]="'w-full rounded-md border border-blue-light bg-white px-3 py-2 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')"></textarea>
+                </div>
+                }
+            </div>
+
+            <!-- Botones de confirmación de datos -->
+            @if (isEditMode && hasDataChanges) {
+            <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+                <button type="button" (click)="cancelChanges()"
+                    class="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                    Cancelar cambios
+                </button>
+                <button type="button" (click)="confirmDataChanges()" [disabled]="isSavingData"
+                    class="px-6 py-2 text-sm font-medium text-white bg-primary-blue hover:bg-primary-blue-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                    @if (isSavingData) {
+                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    <span>Guardando...</span>
+                    } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Guardar cambios</span>
+                    }
+                </button>
+            </div>
+            }
+        </div>
+        }
+
+    </div>
+
+</div>
+
+<!-- <div class="space-y-8">
+
+    <div class="flex justify-end">
+        <button type="button" (click)="toggleEditMode()" [class]="'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-primary-blue text-sm font-medium ' + 
+            (isEditMode ? 'bg-blue-light' : 'hover:bg-blue-light')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                <path d="m15 5 4 4"></path>
+            </svg>
+            <span>{{ isEditMode ? 'Cancelar edición' : 'Editar' }}</span>
+        </button>
+    </div>
+
+
+    <div class="border-0 bg-white shadow-sm rounded-2xl">
+        <div class="p-6 pb-4">
+            <h3 class="flex items-center gap-2 text-primary-blue font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Datos Personales
+            </h3>
+            <p class="text-sm text-[#999]">Gestiona tu información personal y de contacto.</p>
+        </div>
+
+        @if (currentUser) {
+        <div class="flex justify-center mb-6">
+            <div class="relative">
+                <div *ngIf="imagePreviewUrl || currentUser.urlImage; else initials">
+                    <img [src]="imagePreviewUrl || currentUser.urlImage || 'assets/images/user/default.png'"
+                        alt="Foto de perfil"
+                        class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-md">
+                </div>
+                <ng-template #initials>
+                    <div
+                        class="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-md">
+                        <span class="text-5xl font-medium text-gray-600">{{ userInitials }}</span>
+                    </div>
+                </ng-template>
+                <button (click)="fileInput.click()" type="button"
+                    class="absolute bottom-0 right-0 bg-primary-blue text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-primary-blue-hover transition-transform duration-200 ease-in-out hover:scale-110 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z">
+                        </path>
+                        <circle cx="12" cy="13" r="3"></circle>
+                    </svg>
+                </button>
+                <input type="file" class="hidden" #fileInput accept="image/png, image/jpeg"
+                    (change)="onFileSelected($event)">
+            </div>
+        </div>
+
+        <div class="p-6 pt-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+    
+                <div class="space-y-1">
+                    <label for="firstName" class="text-sm font-medium text-primary-blue">Nombre</label>
+                    <input id="firstName" type="text" [(ngModel)]="currentUser.firstName" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+          
+                <div class="space-y-1">
+                    <label for="lastName" class="text-sm font-medium text-primary-blue">Apellidos</label>
+                    <input id="lastName" type="text" [(ngModel)]="currentUser.lastName" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+             
+                <div class="space-y-1">
+                    <label for="email" class="text-sm font-medium text-primary-blue">Email</label>
+                    <input id="email" type="email" [(ngModel)]="currentUser.email" [disabled]="!isEditMode" required
+                        pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" #emailInput="ngModel" [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none ' +
+        (emailInput.invalid && emailInput.touched ? 'border-red-500' : 'focus:border-primary-blue') +
+        (!isEditMode ? ' opacity-60 cursor-not-allowed' : '')">
+                    @if (emailInput.invalid && emailInput.touched) {
+                    <p class="text-red-500 text-xs">Ingrese un email válido</p>
+                    }
+                </div>
+
+                <div class="space-y-1">
+                    <label for="phone" class="text-sm font-medium text-primary-blue">Teléfono</label>
+                    <input id="phone" type="tel" [(ngModel)]="currentUser.phone" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+
+                @if (currentUser.role === 'paciente' && isPatient(currentUser.data)) {
+                <div class="space-y-1">
+                    <label for="dateOfBirth" class="text-sm font-medium text-primary-blue">Fecha de Nacimiento</label>
+                    <input id="dateOfBirth" type="date" [(ngModel)]="fecha" [disabled]="!isEditMode" [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' +
+    (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+
+                </div>
+                <div class="space-y-1">
+                    <label for="gender" class="text-sm font-medium text-primary-blue">Género</label>
+                    <select id="gender" [(ngModel)]="currentUser.data.gender" [disabled]="!isEditMode" [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' +
+        (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                        <option value="">Seleccione...</option>
+                        <option value="male">Masculino</option>
+                        <option value="female">Femenino</option>
+                        <option value="other">Otro</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label for="typeIdentification" class="text-sm font-medium text-primary-blue">
+                        Tipo de Identificación
+                    </label>
+                    <select id="typeIdentification" [(ngModel)]="currentUser.data.typeIdentification"
+                        [disabled]="!isEditMode" [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' +
+        (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                        <option value="">Seleccione...</option>
+                        <option value="dni">DNI</option>
+                        <option value="cc">CC</option>
+                        <option value="ci">CI</option>
+                    </select>
+                </div>
+
+
+                <div class="space-y-1">
+                    <label for="identification" class="text-sm font-medium text-primary-blue">Nº de
+                        Identificación</label>
+                    <input id="identification" type="text" [(ngModel)]="currentUser.data.identification"
+                        [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                <div class="space-y-1">
+                    <label for="nationality" class="text-sm font-medium text-primary-blue">Nacionalidad</label>
+                    <input id="nationality" type="text" [(ngModel)]="currentUser.data.nationality"
+                        [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                }
+
+                @if (currentUser.role === 'medico' && isDoctor(currentUser.data)) {
+                <div class="space-y-1">
+                    <label for="specialty" class="text-sm font-medium text-primary-blue">Especialidad</label>
+                    <input id="specialty" type="text" [(ngModel)]="currentUser.data.specialty" [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                <div class="space-y-1">
+                    <label for="licenseNumber" class="text-sm font-medium text-primary-blue">Nº de Licencia</label>
+                    <input id="licenseNumber" type="text" [(ngModel)]="currentUser.data.licenseNumber"
+                        [disabled]="!isEditMode"
+                        [class]="'h-10 w-full rounded-md border border-blue-light bg-white px-3 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')">
+                </div>
+                <div class="md:col-span-2 space-y-1">
+                    <label for="bio" class="text-sm font-medium text-primary-blue">Biografía</label>
+                    <textarea id="bio" [(ngModel)]="currentUser.data.bio" [disabled]="!isEditMode" rows="3"
+                        [class]="'w-full rounded-md border border-blue-light bg-white px-3 py-2 text-sm focus:outline-none focus:border-primary-blue ' + (!isEditMode ? 'opacity-60 cursor-not-allowed' : '')"></textarea>
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+    </div>
+
+</div> -->

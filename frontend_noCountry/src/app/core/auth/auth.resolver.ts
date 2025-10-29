@@ -16,7 +16,7 @@ export const authResolver: ResolveFn<boolean> = (route, state) => {
 
       if (role === 'paciente') {
         router.navigate(['/dashboard/patient']);
-      } else if (role === 'doctor') {
+      } else if (role === 'medico') {
         router.navigate(['/dashboard/doctor']);
       } else if (role === 'admin') {
         router.navigate(['/dashboard/admin']);

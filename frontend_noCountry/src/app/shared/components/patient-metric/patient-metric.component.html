@@ -1,0 +1,70 @@
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-8">
+  <!-- Existing stats cards -->
+  @for (stat of stats; track stat.title) {
+    <div class="hover:shadow-lg transition-shadow border-0 bg-white rounded-lg shadow">
+      <div class="p-3 sm:p-6">
+        <div class="flex items-start justify-between mb-2 sm:mb-4">
+          <div [class]="'w-8 h-8 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ' + stat.bgColor">
+            <lucide-angular 
+              [img]="getIcon(stat.icon)" 
+              [class]="'w-4 h-4 sm:w-6 sm:h-6 ' + stat.iconColor">
+            </lucide-angular>
+          </div>
+          <lucide-angular 
+            [img]="getIcon('trending-up')" 
+            class="w-3 h-3 sm:w-4 sm:h-4 text-[#2ead4e]">
+          </lucide-angular>
+        </div>
+        <div>
+          <p class="text-[10px] sm:text-sm text-[#999] mb-1">{{ stat.title }}</p>
+          <p class="text-xl sm:text-3xl font-bold text-[#1877f2] mb-1">{{ stat.value }}</p>
+          <p class="text-[10px] sm:text-xs text-[#2ead4e]">{{ stat.change }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- New card for Next Appointment -->
+  @if (nextAppointment) {
+    <div class="hover:shadow-lg transition-shadow border-0 bg-white rounded-lg shadow">
+      <div class="p-3 sm:p-6">
+        <div class="flex items-start justify-between mb-2 sm:mb-4">
+          <div [class]="'w-8 h-8 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ' + nextAppointment.bgColor">
+            <lucide-angular [img]="getIcon('calendar')" [class]="'w-4 h-4 sm:w-6 sm:h-6 ' + nextAppointment.iconColor"></lucide-angular>
+          </div>
+        </div>
+        <div>
+          <p class="text-[10px] sm:text-sm text-[#999] mb-1">Próxima Cita</p>
+          <h4 class="text-xl sm:text-2xl font-bold text-primary-blue mb-2">
+            {{ nextAppointment.day | date:'mediumDate' }} - {{ nextAppointment.start_time }}
+          </h4>
+          <p class="text-sm text-gray-800 mb-1">
+            <span class="font-medium">Doctor:</span> {{ nextAppointment.doctorName }} ({{ nextAppointment.doctorSpecialty }})
+          </p>
+          <p class="text-sm text-gray-800 mb-1 capitalize">
+            <span class="font-medium">Tipo:</span> {{ nextAppointment.consultation_type }}
+            @if (nextAppointment.consultation_type === 'virtual' && nextAppointment.virtualUrl) {
+              <a [href]="nextAppointment.virtualUrl" target="_blank" class="ml-2 text-primary-blue hover:underline">
+                <lucide-angular [img]="getIcon('link')" class="inline-block w-4 h-4"></lucide-angular> Unirse
+              </a>
+            }
+          </p>
+        </div>
+      </div>
+    </div>
+  }@else {
+    <div class="hover:shadow-lg transition-shadow border-0 bg-white rounded-lg shadow">
+      <div class="p-3 sm:p-6">
+        <div class="flex items-start justify-between mb-2 sm:mb-4">
+          <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center bg-primary-blue-light text-primary-blue">
+            <lucide-angular [img]="getIcon('calendar')" class="w-4 h-4 sm:w-6 sm:h-6"></lucide-angular>
+          </div>
+        </div>
+        <div>
+          <p class="text-[10px] sm:text-sm text-[#999] mb-1">Próxima Cita</p>
+          <h4 class="text-xl sm:text-2xl font-bold text-primary-blue mb-2">No hay citas programadas</h4>
+        </div>
+      </div>
+    </div>
+  }
+</div>

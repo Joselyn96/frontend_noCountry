@@ -8,5 +8,6 @@ export interface AuthCurrentUser {
   email: string;
   phone: string | null;
   role: string;
+  urlImage: string | null;
   data: null | Doctor | Patient
 }

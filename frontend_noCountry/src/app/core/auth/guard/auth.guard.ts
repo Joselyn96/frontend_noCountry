@@ -29,12 +29,12 @@ export const authGuard: CanActivateFn = (route, state) => {
     console.log('Verificando acceso - Rol:', cached.role, 'Ruta:', currentPath);
     const role = (cached as any).role;
     if (role === 'admin' && currentPath.includes('/dashboard/admin')) return true;
-    if (role === 'doctor' && currentPath.includes('/dashboard/doctor')) return true;
+    if (role === 'medico' && currentPath.includes('/dashboard/doctor')) return true;
     if (role === 'paciente' && currentPath.includes('/dashboard/patient')) return true;
 
     // redirect to correct dashboard if role doesn't match route
     if (role === 'admin') { router.navigate(['/dashboard/admin']); return false; }
-    if (role === 'doctor') { router.navigate(['/dashboard/doctor']); return false; }
+    if (role === 'medico') { router.navigate(['/dashboard/doctor']); return false; }
     if (role === 'paciente') { router.navigate(['/dashboard/patient']); return false; }
 
     router.navigate(['/login']);
@@ -50,7 +50,7 @@ export const authGuard: CanActivateFn = (route, state) => {
       
       if (role === 'admin' && currentPath.includes('/dashboard/admin')) {
         return true; // Permitir acceso
-      } else if (role === 'doctor' && currentPath.includes('/dashboard/doctor')) {
+      } else if (role === 'medico' && currentPath.includes('/dashboard/doctor')) {
         return true; // Permitir acceso
       } else if (role === 'paciente' && currentPath.includes('/dashboard/patient')) {
         return true; // Permitir acceso
@@ -60,7 +60,7 @@ export const authGuard: CanActivateFn = (route, state) => {
       console.log('Acceso denegado, redirigiendo a su dashboard...');
       if (role === 'admin') {
         router.navigate(['/dashboard/admin']);
-      } else if (role === 'doctor') {
+      } else if (role === 'medico') {
         router.navigate(['/dashboard/doctor']);
       } else if (role === 'paciente') {
         router.navigate(['/dashboard/patient']);
@@ -72,6 +72,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     }),
     catchError((err) => {
       console.error('Error al verificar usuario:', err);
+      authService.logout();
       router.navigate(['/login']);
       return of(false);
     })

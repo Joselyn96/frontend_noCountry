@@ -1,0 +1,83 @@
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="close()">
+
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
+
+    <h2 class="text-xl font-semibold text-primary-blue mb-4">Solicitar Turno</h2>
+
+    <div class="flex border-b mb-4">
+      <button class="flex-1 py-2 text-center font-medium" [class.border-b-2]="step === 1"
+        [class.border-primary-blue]="step === 1" (click)="goStep(1)">
+        Tipo
+      </button>
+      <button class="flex-1 py-2 text-center font-medium" [class.border-b-2]="step === 2"
+        [class.border-primary-blue]="step === 2" (click)="goStep(2)" [disabled]="!selectedType">
+        Día
+      </button>
+      <button class="flex-1 py-2 text-center font-medium" [class.border-b-2]="step === 3"
+        [class.border-primary-blue]="step === 3" (click)="goStep(3)" [disabled]="!selectedDay">
+        Hora
+      </button>
+    </div>
+
+    <form (ngSubmit)="confirmTurno()" class="space-y-4">
+
+      <div *ngIf="step === 1" class="space-y-4">
+        <p class="text-lg text-gray-600">Seleccione el tipo de consulta</p>
+        <button type="button" class="w-full py-2 text-xl rounded-md border flex justify-evenly items-center"
+          [class.bg-primary-blue]="selectedType==='presencial'" [class.text-white]="selectedType==='presencial'"
+          (click)="selectType('presencial')">
+          <lucide-angular [img]="getIcon('building-2')" class="w-20 h-20 sm:w-16 sm:h-16"
+            [ngClass]="selectedType==='presencial' ? 'text-white' : 'text-blue-600'">
+          </lucide-angular>
+          Presencial
+        </button>
+        <button type="button" class="w-full py-2 text-xl rounded-md border flex justify-evenly items-center"
+          [class.bg-primary-blue]="selectedType==='virtual'" [class.text-white]="selectedType==='virtual'"
+          (click)="selectType('virtual')">
+          <lucide-angular [img]="getIcon('video')" class="w-20 h-20 sm:w-16 sm:h-16"
+            [ngClass]="selectedType==='virtual' ? 'text-white' : 'text-blue-600'">
+          </lucide-angular>
+          Virtual
+        </button>
+      </div>
+
+      <div *ngIf="step === 2" class="flex flex-col items-center justify-center gap-4">
+        <p class="text-lg text-gray-600">Seleccione un día disponible</p>
+        <lucide-angular [img]="getIcon('calendar-1')" class="w-20 h-20 sm:w-16 sm:h-16 text-blue-600">
+        </lucide-angular>
+        <input type="date" class="w-full border rounded-md px-3 py-2" [min]="today" [(ngModel)]="selectedDay" name="day"
+          required>
+      </div>
+
+      <div *ngIf="step === 3" class="space-y-4 flex flex-col items-center justify-center">
+        <p class="text-lg text-gray-600">Seleccione la hora</p>
+        <lucide-angular [img]="getIcon('clock')" class="w-20 h-20 sm:w-16 sm:h-16 text-blue-600">
+        </lucide-angular>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" *ngFor="let h of availableHours" class="py-2 border rounded-md p-4"
+            [class.bg-primary-blue]="selectedHour===h" [class.text-white]="selectedHour===h" (click)="selectHour(h)">
+            {{ h }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="text-red-500 text-sm mb-2">
+        {{ errorMessage }}
+      </div>
+
+      <div class="flex justify-between pt-3">
+        <button type="button" class="px-4 py-2 border rounded-md bg-red-500 text-white"
+          (click)="close()">Cancelar</button>
+        <button type="button" class="px-4 py-2 border rounded-md" (click)="prevStep()"
+          [disabled]="step===1">Atrás</button>
+        <button type="button" class="px-4 py-2 bg-primary-blue text-white rounded-md" *ngIf="step<3"
+          (click)="nextStep()">
+          Siguiente
+        </button>
+        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md" *ngIf="step===3">
+          Confirmar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -45,4 +45,20 @@ export class DoctorService {
       { observe: 'response' }
     );
   }
+
+  updateDoctor(doctorData: any): Observable<HttpResponse<Object>> {
+    return this.httpClient.put(
+      this.path,
+      doctorData,
+      { observe: 'response' }
+    );
+  }
+
+  getBySpecialty(specialty: number): Observable<HttpResponse<Object>> {
+    // const params = new HttpParams().set('specialty', specialty);
+    return this.httpClient.get(
+      `${this.path}/specialty/${specialty}`,
+      { observe: 'response' }
+    );
+  }
 }

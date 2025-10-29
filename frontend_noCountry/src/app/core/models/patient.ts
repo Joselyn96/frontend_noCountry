@@ -1,8 +1,10 @@
 export interface Patient {
   id: number;
-  dateOfBirth: string;
+  dateOfBirth: Date;
   gender: string;
-  dni: string;
+  identification: string;
+  typeIdentification: string;
+  nationality: string;
 }
 
 export interface PatientCreate {
@@ -56,4 +58,14 @@ export interface PatientResponse {
   nationality: string;
   isActive: boolean;
   phone: string | null;
+}
+
+export interface PatientUpdate {
+  firstName: string;
+  lastName: string;
+  phone?: string;
+
+  dateOfBirth: Date;
+  gender: 'male' | 'female' | 'other';
+  nationality: string;
 }

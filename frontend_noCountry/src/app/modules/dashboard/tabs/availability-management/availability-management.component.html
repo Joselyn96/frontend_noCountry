@@ -1,0 +1,129 @@
+<!-- src/app/modules/dashboard/tabs/availability-management/availability-management.component.html -->
+
+<div class="p-4 sm:p-6 lg:p-8">
+  <!-- Header -->
+  <div class="sm:flex sm:items-center sm:justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900 sm:text-3xl">Gestión de Disponibilidad</h2>
+      <p class="mt-1 text-sm text-gray-500">Administra los horarios de disponibilidad de los médicos.</p>
+    </div>
+
+  </div>
+
+  <div class="mt-8">
+    <p class="text-gray-500">Aquí se mostrará la lista de disponibilidades existentes.</p>
+  </div>
+
+  <form [formGroup]="availabilityForm" (ngSubmit)="onSubmit()" class="space-y-4 max-h-[70vh] pr-2">
+
+    <!-- Form Array for Days -->
+    <div formArrayName="availabilities" class="space-y-6">
+      <div *ngFor="let dayGroup of availabilitiesFormArray.controls; let i = index" [formGroupName]="i"
+        class="p-4 border rounded-lg transition-all" [class.bg-gray-50]="!dayGroup.get('enabled')?.value">
+
+        <!-- Day Header with Checkbox -->
+        <div class="flex items-center mb-4">
+          <input type="checkbox" [formControlName]="'enabled'"
+            class="h-4 w-4 rounded border-gray-300 text-primary-blue focus:ring-primary-blue">
+          <label class="ml-3 text-lg font-semibold text-primary-blue">{{ weekDays[i].name }}</label>
+        </div>
+
+        <!-- Fields for the day -->
+        <div class="space-y-4" [class.opacity-50]="!dayGroup.get('enabled')?.value">
+          <!-- Horarios de Jornada -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-primary-blue text-sm font-medium">Inicio Jornada *</label>
+              <select type="time" formControlName="startTime"
+                class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue">
+                <option value="">Seleccione un horario</option>
+                <option *ngFor="let slot of timeSlots" [value]="slot">
+                  <!-- {{ formatTimeToAmPm(slot) }} --> {{slot}}
+              </select>
+              <!-- <input type="time" formControlName="startTime" step="1800"
+                class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" /> -->
+            </div>
+            <div class="space-y-1">
+              <label class="text-primary-blue text-sm font-medium">Fin Jornada *</label>
+              <select type="time" formControlName="endTime"
+                class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue">
+                <option value="">Seleccione un horario</option>
+                <option *ngFor="let slot of timeSlots" [value]="slot">
+                  <!-- {{ formatTimeToAmPm(slot) }} --> {{slot}}
+              </select>
+              <!-- <input type="time" formControlName="endTime" step="1800"
+                class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" /> -->
+            </div>
+          </div>
+
+          <!-- Horarios de Descanso -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-primary-blue text-sm font-medium">Inicio Descanso</label>
+              <select type="time" formControlName="restStartTime"
+                class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue">
+                <option value="">Seleccione un horario</option>
+                <option *ngFor="let slot of timeSlots" [value]="slot">
+                  <!-- {{ formatTimeToAmPm(slot) }} --> {{slot}}
+              </select>
+              <!-- <input type="time" formControlName="restStartTime" step="1800"
+                class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" /> -->
+            </div>
+            <div class="space-y-1">
+              <label class="text-primary-blue text-sm font-medium">Fin Descanso</label>
+              <select type="time" formControlName="restEndTime"
+                class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue">
+                <option value="">Seleccione un horario</option>
+                <option *ngFor="let slot of timeSlots" [value]="slot">
+                  <!-- {{ formatTimeToAmPm(slot) }} --> {{slot}}
+              </select>
+              <!-- <input type="time" formControlName="restEndTime" step="1800"
+                class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" /> -->
+            </div>
+          </div>
+
+          <!-- Duración de Turno -->
+          <div class="space-y-1">
+            <label class="text-primary-blue text-sm font-medium">Duración de Turno (minutos) *</label>
+            <input type="number" step="15" min="15" formControlName="periodTime" placeholder="30"
+              class="w-full border border-blue-light rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-blue" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mensajes -->
+    @if (errorMsg()) {
+    <div class="mt-3 border border-[#f44336] bg-[#ffebee] text-[#f44336] text-sm rounded-md px-3 py-2">
+      {{ errorMsg() }}
+    </div>
+    }
+    @if (successMsg()) {
+    <div class="mt-3 border border-primary-green bg-green-light text-primary-green text-sm rounded-md px-3 py-2">
+      {{ successMsg() }}
+    </div>
+    }
+
+    <!-- Footer -->
+    <div class="flex justify-end gap-2 pt-4 sticky bottom-0 bg-white">
+      <button type="button" (click)="closeAllDialogs()"
+        class="px-4 py-2 text-sm rounded-md border border-blue-light text-gray-700 hover:bg-gray-100">
+        Cancelar
+      </button>
+      <button type="submit" [disabled]="isSubmitting()"
+        class="px-4 py-2 text-sm rounded-md bg-primary-blue text-white hover:bg-primary-blue-hover flex items-center justify-center gap-2">
+        @if (isSubmitting()) {
+        <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="white" stroke-width="4"></circle>
+          <path class="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8z"></path>
+        </svg>
+        Guardando...
+        } @else {
+        Guardar Horarios
+        }
+      </button>
+    </div>
+  </form>
+
+</div>
