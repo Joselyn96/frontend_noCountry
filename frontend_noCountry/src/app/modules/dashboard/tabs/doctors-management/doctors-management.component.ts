@@ -117,29 +117,6 @@ export class DoctorsManagementComponent {
     );
   }
 
-  // onSearchInput(value: string) {
-  //   const v = (value ?? '').toString();
-  //   this.searchTerm.set(v);
-  //   this.getDoctorsByName(v);
-  // }
-
-  // async getDoctorsByName(name: string) {
-  //   const q = (name ?? '').toString().trim();
-
-  //   if (q.length === 0) {
-  //     this.searchTerm.set('');
-  //     await this.getDoctors();
-  //     return;
-  //   }
-
-  //   if (q.length < 3) {
-  //     this.searchTerm.set(q);
-  //     return;
-  //   }
-
-  //   this.search$.next(q);
-  // }
-
   ngOnDestroy(): void {
     this.searchSub?.unsubscribe();
     this.search$.complete();

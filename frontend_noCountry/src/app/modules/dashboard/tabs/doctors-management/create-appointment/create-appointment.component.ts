@@ -108,24 +108,6 @@ export class CreateAppointmentComponent {
     return '';
   }
 
-  // confirmTurno() {
-  //   if (!this.canNext()) {
-  //     this.errorMessage = this.getErrorMessage();
-  //     return;
-  //   }
-
-  //   const turno = {
-  //     type: this.selectedType,
-  //     day: this.selectedDay,
-  //     hour: this.selectedHour,
-  //     doctorId: this.doctor.id
-  //   };
-
-  //   console.log('Turno confirmado:', turno);
-  //   this.turnoConfirmed.emit(turno);
-  //   this.close();
-  // }
-
   close() {
     this.closeDialog.emit();
   }

@@ -43,13 +43,13 @@ export class AppointmentManagementComponent {
       distinctUntilChanged(),
       filter(q => !!q && q.trim().length >= 3),
       // switchMap(q =>
-        // TODO: Reemplazar con el método de búsqueda de citas real
-        // this.appointmentService.searchAppointments(q).pipe(
-        //   catchError(err => {
-        //     console.error('Error searching appointments:', err);
-        //     return of({ body: { appointments: [] } });
-        //   })
-        // )
+      // TODO: Reemplazar con el método de búsqueda de citas real
+      // this.appointmentService.searchAppointments(q).pipe(
+      //   catchError(err => {
+      //     console.error('Error searching appointments:', err);
+      //     return of({ body: { appointments: [] } });
+      //   })
+      // )
       // )
     ).subscribe({
       next: (response: any) => {
@@ -58,7 +58,7 @@ export class AppointmentManagementComponent {
       },
       error: err => console.error('Search subscription error:', err)
     });
-  } 
+  }
 
   user: AuthCurrentUser | null = null;
 
@@ -207,5 +207,9 @@ export class AppointmentManagementComponent {
 
   nextPage() {
     this.setPage(this.currentPage() + 1);
+  }
+
+  redirectToMeet() {
+    window.open('https://meet.google.com/eeh-tixe-hsf', '_blank');
   }
 }

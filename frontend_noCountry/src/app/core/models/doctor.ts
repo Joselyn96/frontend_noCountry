@@ -1,6 +1,6 @@
 export interface Doctor {
   id: number;
-  specialty: string;
+  speciality: string;
   licenseNumber: string;
   bio: string;
 }

@@ -3,6 +3,9 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
+ARG CACHEBUST=1
+RUN echo "Cache bust: $CACHEBUST"
+
 # Instalar dependencias
 COPY package*.json ./
 RUN npm ci --silent
