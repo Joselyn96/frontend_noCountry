@@ -4,6 +4,7 @@
 
 /* Healthcare theme with soft pastel blues and professional colors */
 :root {
+  --primary_light: #88b7f5;
   --primary-blue: #1877f2;
   --primary-blue-hover: #1565c0;
   /* **Hover del botón primario** */

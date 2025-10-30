@@ -1,13 +1,20 @@
-<div class="min-h-screen flex">
-  <div
-    class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/10 via-accent/5 to-background items-center justify-center p-12">
-    <div class="max-w-md space-y-6">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-          <!-- <HeartPulse class="w-7 h-7 text-primary-foreground" /> -->
-        </div>
-        <h1 class="text-3xl font-bold text-foreground">MediConnect</h1>
+<div class="min-h-screen flex flex-col">
+  <nav class="w-full bg-white border-b border-gray-200 py-4 px-6 lg:px-12">
+    <a routerLink="/" class="inline-flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+      <div class="w-10 h-10 rounded-xl bg-primary-blue flex items-center justify-center">
+        <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          <path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>
+        </svg>
       </div>
+      <h1 class="text-2xl font-bold text-foreground">MediConnect</h1>
+    </a>
+  </nav>
+
+  <div class="flex flex-1">
+  <div
+    class="hidden lg:flex lg:w-1/2 items-center justify-center p-12">
+    <div class="max-w-md space-y-6">
       <h2 class="text-4xl font-bold text-foreground leading-tight">Atención médica al alcance de tu mano</h2>
       <p class="text-lg text-muted-foreground leading-relaxed">
         Gestiona tus citas, consulta tu historial clínico y conecta con profesionales de la salud desde cualquier
@@ -16,11 +23,11 @@
       <div class="flex gap-4 pt-4">
         <div class="flex items-center gap-2">
           <div class="w-2 h-2 rounded-full bg-success"></div>
-          <span class="text-sm text-muted-foreground">Seguro y confiable</span>
+          <span class="text-sm text-primary-blue">Seguro y confiable</span>
         </div>
         <div class="flex items-center gap-2">
           <div class="w-2 h-2 rounded-full bg-success"></div>
-          <span class="text-sm text-muted-foreground">Disponible 24/7</span>
+          <span class="text-sm text-primary-blue">Disponible 24/7</span>
         </div>
       </div>
     </div>
@@ -28,14 +35,6 @@
 
   <div class="flex-1 flex items-center justify-center p-6 lg:p-12">
     <div class="w-full max-w-md space-y-8">
-      <div class="text-center lg:hidden mb-8">
-        <div class="inline-flex items-center gap-2 mb-4">
-          <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <!-- <HeartPulse class="w-6 h-6 text-primary-foreground" /> -->
-          </div>
-          <h1 class="text-2xl font-bold">MediConnect</h1>
-        </div>
-      </div>
 
       <div class="space-y-2 text-center">
         <h2 class="text-3xl font-bold text-foreground">Iniciar sesión</h2>
@@ -52,4 +51,5 @@
       </div>
     </div>
   </div>
+    </div>
 </div>
