@@ -24,7 +24,7 @@
     <div class="space-y-2">
     <div class="flex items-center justify-between">
       <label for="password" class="block text-sm font-medium">Contraseña</label>
-      <button type="button" class="text-sm text-blue-600 hover:underline">
+      <button type="button" class="text-sm text-primary-blue hover:underline">
         ¿Olvidaste tu contraseña?
       </button>
     </div>
@@ -72,7 +72,7 @@
   </button> -->
   <button
   type="submit"
-  class="w-full flex items-center justify-center bg-black text-white py-2 rounded-md hover:bg-gray-800 hover:cursor-pointer disabled:bg-blue-400 transition-all"
+  class="w-full flex items-center justify-center bg-primary-blue text-white py-2 rounded-md hover:bg-primary-blue-hover hover:cursor-pointer disabled:bg-blue-400 transition-all"
   [disabled]="isLoading"
 >
   <ng-container *ngIf="isLoading; else normalText">
