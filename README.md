@@ -3,6 +3,9 @@
 Es un portal web de coordinación de citas y teleasistencia diseñado para clínicas y centros de salud.
 El proyecto busca mejorar la eficiencia de los servicios de salud mediante una plataforma unificada, moderna y segura
 
+# Visita el sistema
+https://www.nocountry.saltaget.com
+
 ## 🧩 Tecnologías utilizadas
 
 - **Angular** 19.2.17 — Framework principal para la aplicación web  
