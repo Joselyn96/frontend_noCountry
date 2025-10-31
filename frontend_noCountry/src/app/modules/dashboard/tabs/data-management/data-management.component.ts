@@ -219,31 +219,34 @@ export class DataManagementComponent implements OnInit {
     }
 
     this.isUploadingImage = true;
-    try {
-      console.log('Subiendo imagen:', this.selectedFile.name);
-      
-      // Llamada al servicio
-      const response = this.userService.updateUserImage(this.selectedFile);
-      
-      // Actualizar la URL de la imagen en currentUser
-      // if (this.currentUser && response.urlImage) {
-      //   this.currentUser.urlImage = response.urlImage;
-      // }
-      
-      // Limpiar estado temporal
+    console.log('Subiendo imagen:', this.selectedFile.name);
+
+  this.userService.updateUserImage(this.selectedFile).subscribe({
+    next: (resp) => {
+      const body = resp.body as { result?: { urlImage?: string } } | null;
+      const newUrl = body?.result?.urlImage;
+
+      if (this.currentUser && newUrl) {
+        // rompe caché para que el navegador muestre la nueva
+        this.currentUser.urlImage = `${newUrl}?t=${Date.now()}`;
+      }
+
+      // limpiar estado temporal
       this.selectedFile = null;
       this.imagePreviewUrl = null;
       this.hasImageChanges = false;
-      
+
       console.log('Imagen actualizada exitosamente');
       alert('Imagen de perfil actualizada correctamente');
-      
-    } catch (error) {
+    },
+    error: (error) => {
       console.error('Error al actualizar imagen:', error);
       alert('Error al actualizar la imagen. Por favor, intenta nuevamente.');
-    } finally {
+    },
+    complete: () => {
       this.isUploadingImage = false;
     }
+  });
   }
 
   cancelImageChange(): void {

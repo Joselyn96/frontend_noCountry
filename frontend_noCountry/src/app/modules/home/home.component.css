@@ -168,7 +168,7 @@
 /* Mobile Navigation - CORREGIDO */
 .navbar-mobile {
   position: fixed;
-  top: 80px;
+  top: 60px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -177,8 +177,9 @@
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   overflow-y: auto;
-  z-index: 999;
-  display: none;
+  z-index: 1100;
+  display: block;
+  height: calc(100vh - 80px);
 }
 
 /* Mostrar en tablets y móviles */
@@ -410,7 +411,8 @@
 
 .especialidades-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  /* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
+  grid-template-columns: repeat(3, minmax(0,1fr));
   gap: 24px;
 }
 
@@ -452,7 +454,7 @@
 }
 
 .especialidad-card:hover .especialidad-icon {
-  background: var(--primary-blue);
+  /* background: var(--primary-blue); */
   color: white;
   transform: scale(1.1);
 }
@@ -558,6 +560,7 @@
   background: linear-gradient(90deg, var(--primary-blue), var(--primary-green));
   margin-top: 80px;
   position: relative;
+  list-style: none;
 }
 
 .paso-connector::after {
@@ -1375,4 +1378,9 @@ a:focus {
   .footer-social {
     display: none;
   }
+}
+
+body.mobile-active .navbar-mobile {
+  transform: translateX(0);
+  pointer-events: auto;
 }

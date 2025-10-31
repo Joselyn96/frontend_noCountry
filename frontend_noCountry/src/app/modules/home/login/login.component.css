@@ -3,3 +3,10 @@
   height: 48px;
   object-fit: contain;
 }
+.logo-medi {
+  color: var(--primary-green);
+}
+
+.logo-connect {
+  color: var(--primary-blue);
+}
