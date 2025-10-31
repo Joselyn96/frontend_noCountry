@@ -1,0 +1,96 @@
+<div class="border-0 bg-white shadow-sm rounded-2xl">
+  <div class="p-4 sm:p-6">
+    <div class="flex items-center justify-between relative">
+      <h3 class="text-primary-blue text-lg sm:text-xl font-semibold">Historial Clínico</h3>
+    </div>
+
+    <!-- Opcional: Barra de búsqueda si se desea buscar en el historial -->
+    <!-- <div class="flex gap-3 mt-4">
+      <div class="relative flex-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#999]" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input type="text" placeholder="Buscar en el historial..."
+          class="w-full pl-10 pr-3 py-2 text-sm border border-blue-light rounded-md focus:outline-none focus:border-primary-blue" />
+      </div>
+    </div> -->
+  </div>
+
+  <div class="px-4 sm:px-6 pb-6">
+    <div class="space-y-4">
+      @if (medicalConsultations === null || medicalConsultations === undefined) {
+      <div class="flex items-center justify-center h-40">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-blue"></div>
+      </div>
+      } @else {
+      @if (medicalConsultations.length === 0) {
+      <div class="flex items-center justify-center h-40">
+        <p class="text-gray-500">No se encontraron registros en el historial clínico.</p>
+      </div>
+      } @else {
+      <!-- Pagination controls -->
+      <div class="flex items-center justify-center mt-4">
+        <div class="flex items-center gap-2">
+          <button (click)="prevPage()" [disabled]="currentPage() === 1"
+            class="px-3 py-1 border rounded-md text-sm disabled:opacity-50">Anterior</button>
+
+          <ng-container *ngFor="let p of Array(totalPages()) ; let i = index">
+            <button (click)="setPage(i+1)"
+              [class]="currentPage() === (i+1) ? 'px-3 py-1 rounded-md bg-primary-blue text-white text-sm' : 'px-3 py-1 border rounded-md text-sm'">
+              {{ i + 1 }}
+            </button>
+          </ng-container>
+
+          <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
+            class="px-3 py-1 border rounded-md text-sm disabled:opacity-50">Siguiente</button>
+        </div>
+      </div>
+
+      @for (consultation of paginatedMedicalConsultations(); track consultation.id) {
+      <div
+        class="flex flex-col gap-2 p-4 mt-4 rounded-lg border border-blue-light hover:bg-blue-hover transition-colors">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h4 class="font-semibold text-primary-blue">Consulta #{{ consultation.id }} - {{ consultation.reason_for_consultation }}</h4>
+          <span class="text-xs px-2 py-1 rounded-md border border-gray-400 bg-gray-100 text-gray-700">
+            {{ consultation.appointmentDay | date:'mediumDate' }}
+          </span>
+        </div>
+
+        <p class="text-sm text-gray-800 mb-1 font-medium">
+          <span class="font-normal text-gray-600">Doctor:</span> {{ consultation.doctorName }}
+        </p>
+        <p class="text-sm text-gray-800 mb-1 font-medium">
+          <span class="font-normal text-gray-600">Paciente:</span> {{ consultation.patientName }}
+        </p>
+
+        <div class="text-sm text-gray-700">
+          <p class="font-medium">Diagnóstico:</p>
+          <p class="ml-2">{{ consultation.diagnosis }}</p>
+        </div>
+
+        @if (consultation.instructions) {
+        <div class="text-sm text-gray-700">
+          <p class="font-medium">Instrucciones:</p>
+          <p class="ml-2">{{ consultation.instructions }}</p>
+        </div>
+        }
+
+        @if (consultation.notes) {
+        <div class="text-sm text-gray-700">
+          <p class="font-medium">Notas:</p>
+          <p class="ml-2">{{ consultation.notes }}</p>
+        </div>
+        }
+
+        <div class="text-xs text-[#999] text-right mt-2">
+          Registrado el {{ consultation.created_at | date:'short' }}
+        </div>
+      </div>
+      }
+      }
+      }
+    </div>
+  </div>
+</div>

@@ -16,6 +16,7 @@ export class FormLoginComponent {
   isLoading = false;
   error: string | null = null;
   success: string | null = null;
+  showPassword = false;
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -37,7 +38,7 @@ export class FormLoginComponent {
   }
 
   handleLogin() {
-    if (this.loginForm.invalid) {
+     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
@@ -63,5 +64,9 @@ export class FormLoginComponent {
           this.error = 'Credenciales incorrectas';
         }
       });
+  }
+
+    togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }

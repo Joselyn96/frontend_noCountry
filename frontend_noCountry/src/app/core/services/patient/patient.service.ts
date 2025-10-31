@@ -45,4 +45,12 @@ export class PatientService {
       { observe: 'response' }
     );
   }
+
+  updatePatient(id: number, patientData: any): Observable<HttpResponse<Object>> {
+    return this.httpClient.put(
+      `${this.path}/${id}`,
+      patientData,
+      { observe: 'response' }
+    );
+  }
 }

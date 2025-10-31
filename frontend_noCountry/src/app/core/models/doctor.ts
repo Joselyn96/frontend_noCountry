@@ -18,13 +18,12 @@ export interface DoctorCreate {
 }
 
 export interface DoctorUpdate {
-  firstName: string,
-  lastName: string,
-  phone: string | null,
-  email: string,
-  specialty: string;
-  licenseNumber: string;
-  bio: string;
+  id: number;
+  firstName: string;
+  lastName: string;
+  specialityId: number;
+  bio?: string;
+  phone?: string;
 }
 
 export interface DoctorResponse {
@@ -33,6 +32,8 @@ export interface DoctorResponse {
   lastName: string;
   email: string;
   createdAt: Date;
+  specialtyId: number;
+  bio: string;
   speciality: string;
   licenseNumber: string;
   urlImage: string | null;

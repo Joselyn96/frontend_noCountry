@@ -2,11 +2,8 @@
   <div class="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2 sm:gap-3">
-        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary-blue flex items-center justify-center">
-          <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-            <path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>
-          </svg>
+        <div class="w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center">
+          <img src="assets/images/logo-sin-fondo.png" alt="MediConnect" class="logo-icon" />
         </div>
         <div>
           <h1 class="text-base sm:text-xl font-bold mb-1 sm:mb-2 text-primary-blue">MediConnect</h1>
@@ -17,30 +14,21 @@
       </div>
 
       <div class="flex items-center gap-2 sm:gap-3">
-        <button class="relative h-8 w-8 sm:h-10 sm:w-10 hover:bg-blue-light inline-flex items-center justify-center rounded-md transition-colors">
-          <svg class="h-4 w-4 sm:h-5 sm:w-5 text-primary-blue" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-          </svg>
-          <span class="absolute top-1 right-1 w-2 h-2 bg-[#f44336] rounded-full"></span>
-        </button>
 
-        <div class="hidden md:flex items-center gap-3 pl-3 border-l border-blue-light">
-          <div class="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-            <span class="text-sm font-medium text-gray-600">AD</span>
+        <div *ngIf="user" class="hidden md:flex items-center gap-3 pl-3 border-l border-blue-light">
+          <div *ngIf="user.urlImage; else initials" class="h-9 w-9 rounded-full overflow-hidden">
+            <img [src]="user.urlImage" alt="Foto de perfil" class="w-full h-full object-cover">
           </div>
+          <ng-template #initials>
+            <div class="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+              <span class="text-sm font-medium text-gray-600">{{ userInitials }}</span>
+            </div>
+          </ng-template>
           <div>
-            <p class="text-sm font-medium text-primary-blue">{{ userRole }}</p>
-            <p class="text-xs text-primary-green">{{ userSubtitle }}</p>
+            <p class="text-sm font-medium text-primary-blue">{{ user.firstName }} {{ user.lastName }}</p>
+            <p class="text-xs text-primary-green">{{ userRoleDisplay }}</p>
           </div>
         </div>
-
-        <button class="hidden sm:flex h-8 w-8 sm:h-10 sm:w-10 hover:bg-blue-light inline-flex items-center justify-center rounded-md transition-colors">
-          <svg class="h-4 w-4 sm:h-5 sm:w-5 text-primary-blue" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-            <circle cx="12" cy="12" r="3"/>
-          </svg>
-        </button>
 
         <button class="h-8 w-8 sm:h-10 sm:w-10 hover:bg-blue-light inline-flex items-center justify-center rounded-md transition-colors" (click)="logout()">
           <svg class="h-4 w-4 sm:h-5 sm:w-5 text-primary-blue" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

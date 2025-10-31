@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { MetricCardComponent } from '../../../shared/components/metric-card/metric-card.component';
 import { StatData } from '../../../shared/interfaces/stat-data.interface';
-import { RolesPermissionsComponent } from './tabs/roles-permissions/roles-permissions.component';
-import { SystemSettingsComponent } from './tabs/system-settings/system-settings.component';
-import { PatientsManagementComponent } from './tabs/patients-management/patients-management.component';
-import { DoctorsManagementComponent } from './tabs/doctors-management/doctors-management.component';
+import { RolesPermissionsComponent } from '../tabs/roles-permissions/roles-permissions.component';
+import { SystemSettingsComponent } from '../tabs/system-settings/system-settings.component';
+import { PatientsManagementComponent } from '../tabs/patients-management/patients-management.component';
+import { DoctorsManagementComponent } from '../tabs/doctors-management/doctors-management.component';
 
 type TabValue = 'doctors' | 'roles' | 'patients' | 'settings';
 type Tab = { label: string; value: TabValue };

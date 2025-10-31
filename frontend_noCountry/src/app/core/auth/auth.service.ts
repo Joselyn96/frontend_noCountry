@@ -169,6 +169,10 @@ export class AuthService {
     ).pipe(
       tap((response) => {
         console.log('Respuesta del servidor:', response);
+        if (response.user.role === 'paciente') {
+          const patient = response.user.data as any;
+          patient.dateOfBirth = new Date(patient.dateOfBirth);
+        }
         this.authUserSubject.next(response.user);
       }),
       catchError((error) => {
