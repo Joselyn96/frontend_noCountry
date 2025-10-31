@@ -175,6 +175,8 @@ export class PatientsManagementComponent {
     }
 
     this.isCreating.set(true);
+    this.errorMsg.set('');
+    this.successMsg.set('');
 
     // build payload according to PatientCreateByAdmin
     const v = this.patientForm.value;
@@ -197,20 +199,17 @@ export class PatientsManagementComponent {
         // refresh patients from server (resets pagination)
         this.getPatients();
         this.patientForm.reset();
+         setTimeout(() => {
+          this.isCreating.set(false);
+          this.isPatientDialogOpen.set(false);
+          this.successMsg.set('');
+        }, 900);
       },
       error: (err) => {
         console.error('Error creating patient:', err);
         this.errorMsg.set('Error al crear paciente');
+        this.isCreating.set(false);
       },
-      complete: () => {
-        // small delay to show success state
-        setTimeout(() => {
-          this.isCreating.set(false);
-          this.isPatientDialogOpen.set(false);
-          this.successMsg.set('');
-          this.errorMsg.set('');
-        }, 900);
-      }
     });
   }
 

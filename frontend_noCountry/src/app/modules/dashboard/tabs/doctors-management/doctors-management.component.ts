@@ -221,6 +221,8 @@ export class DoctorsManagementComponent {
     }
 
     this.isCreating.set(true);
+    this.errorMsg.set('');
+    this.successMsg.set('');
 
     const v = this.doctorForm.value;
     console.log(v);
@@ -239,18 +241,17 @@ export class DoctorsManagementComponent {
         this.successMsg.set('Cuenta de médico creada exitosamente.');
         this.doctorForm.reset();
         this.getDoctors();
-      },
-      error: (err) => {
-        console.error('Error creating doctor:', err);
-        this.errorMsg.set('Error al crear médico');
-      },
-      complete: () => {
+        
         setTimeout(() => {
           this.isCreating.set(false);
           this.isDoctorDialogOpen.set(false);
           this.successMsg.set('');
-          this.errorMsg.set('');
         }, 900);
+      },
+      error: (err) => {
+        console.error('Error creating doctor:', err);
+        this.errorMsg.set('Error al crear médico');
+        this.isCreating.set(false);
       }
     });
   }
